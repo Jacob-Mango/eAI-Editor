@@ -19,28 +19,9 @@ using System.Windows.Shapes;
 
 namespace eAIEditor
 {
-    public partial class FSMNode
-    {
-        [NonSerialized]
-        public Point Poisiton;
-
-        public string Name;
-    }
-
-    public class FSMState: FSMNode
-    {
-
-    }
-
-    public partial class FSMTransition
-    { 
-
-    }
-
-
     public class MainCanvasContext: INotifyPropertyChanged
     {
-        public ObservableCollection<FSMNode> Nodes = new();
+        public ObservableCollection<FSMNode> Nodes = new ObservableCollection<FSMNode>();
 
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
@@ -63,25 +44,35 @@ namespace eAIEditor
 
         void InsertNode(FSMNode node)
         {
-            m_MainCanvasContext.Nodes.Insert(node);
+            m_MainCanvasContext.Nodes.Add(node);
+            CanvasView.Children.Add(node);
         }
 
         void RemoveNode(FSMNode node)
         {
             m_MainCanvasContext.Nodes.Remove(node);
+            CanvasView.Children.Remove(node);
         }
 
         private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine(sender);
             ContextMenu cm = FindResource("MainCtxMenu") as ContextMenu;
-            Debug.WriteLine(cm);
             cm.IsOpen = true;
         }
 
-        private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
+        private void AddNode_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("What");
+
+            FSMNodeData node_data = new FSMNodeData {
+                Name = "Test"
+            };
+
+            FSMNode node = new FSMNode(node_data);
+            InsertNode(node);
+
+            MenuItem item = sender as MenuItem;
+            
+            node.SetPosition(item.RenderTransformOrigin);
         }
     }
 }

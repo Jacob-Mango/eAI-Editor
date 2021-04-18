@@ -8,10 +8,14 @@
         Title="MainCanvas" Height="450" Width="800">
     <Window.Resources>
         <ContextMenu x:Key="MainCtxMenu">
-            <MenuItem  Header="Add Node"/>
+            <MenuItem Header="Add Node" Click="AddNode_Click"/>
         </ContextMenu>
     </Window.Resources>
     <Grid>
-        <Canvas MouseDown="Canvas_MouseDown" MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Canvas x:Name="CanvasView" MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Canvas.Background>
+                <SolidColorBrush Color="White" Opacity="0"/>
+            </Canvas.Background>
+        </Canvas>
     </Grid>
 </Window>
