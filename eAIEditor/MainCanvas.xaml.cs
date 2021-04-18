@@ -64,7 +64,7 @@ namespace eAIEditor
         {
             MenuItem item = sender as MenuItem;
             FSMNode node = new FSMNode {
-                Name = "Test",
+                Name = "node0",
                 Position = item.PointToScreen(new Point())
             };
 

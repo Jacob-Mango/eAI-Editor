@@ -18,17 +18,16 @@ using System.Windows.Shapes;
 
 namespace eAIEditor
 {
-
+    // Serialized node
+    [Serializable]
     public class FSMNode : INotifyPropertyChanged
     {
         public Point Position {
-            set {
-                View.SetPosition(value);
-                OnPropertyChanged();
-            }
-            get => View.GetPosition();
+            set => View.Position = value;
+            get => View.Position;
         }
 
+        [NonSerialized]
         private string _name;
         public string Name {
             set {
@@ -65,14 +64,14 @@ namespace eAIEditor
             DataContext = m_Node = node;
         }
 
-        public void SetPosition(Point position)
-        {
-            Canvas.SetLeft(this, (double)position.X);
-            Canvas.SetTop(this, (double)position.Y);
+        public Point Position {
+            get => new Point { X = Canvas.GetLeft(this), Y = Canvas.GetTop(this) };
+            set {
+                Canvas.SetLeft(this, (double)value.X);
+                Canvas.SetTop(this, (double)value.Y);
+            }
         }
-
-        public Point GetPosition() => new Point { X = Canvas.GetLeft(this), Y = Canvas.GetTop(this) };
-
+  
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -89,6 +88,7 @@ namespace eAIEditor
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            base.OnMouseDown(e);
             if (e.ChangedButton == MouseButton.Left) {
                 //DragMove();
             }
@@ -100,6 +100,16 @@ namespace eAIEditor
             if (e.LeftButton == MouseButtonState.Pressed) {
                 //SetPosition(e.GetPosition());
             }
+        }
+
+        private void NodeRight_Click(object sender, RoutedEventArgs e)
+        {
+
+        }        
+        
+        private void NodeLeft_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
