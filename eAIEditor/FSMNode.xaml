@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              Height="100"
              Width="250"
-             d:DesignHeight="100" d:DesignWidth="250">
+             d:DesignHeight="100" d:DesignWidth="250" HorizontalAlignment="Left" VerticalAlignment="Top">
 
     <Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Stretch">
         <Grid Background="Coral" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">

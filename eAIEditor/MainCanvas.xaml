@@ -32,18 +32,21 @@
                 <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
 
-            <TreeView Grid.Column="0" x:Name="NodeTreeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Path=Nodes}">
+			<ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Visible">
+				<Canvas x:Name="NodeCanvasView" MouseRightButtonDown="Canvas_MouseRightButtonDown" MouseWheel="ScrollViewer_MouseWheel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="50000" MinHeight="50000">
+				    <Canvas.Background>
+					    <SolidColorBrush Color="White" Opacity="0"/>
+				    </Canvas.Background>
+				</Canvas>
+			</ScrollViewer>
+
+			<TreeView Grid.Column="0" x:Name="NodeTreeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Path=Nodes}">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type local:FSMNode}">
                         <TreeViewItem Header="{Binding Path=Name}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>
             </TreeView>
-            <Canvas Grid.Column="1" x:Name="NodeCanvasView" MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Canvas.Background>
-                    <SolidColorBrush Color="White" Opacity="0"/>
-                </Canvas.Background>
-            </Canvas>
         </Grid>
     </DockPanel>
 </Window>

@@ -34,12 +34,38 @@ namespace eAIEditor
     /// </summary>
     public partial class MainCanvas : Window
     {
+        protected ScaleTransform m_ScaleTransform;
         protected MainCanvasContext m_MainCanvasContext;
 
         public MainCanvas()
         {
             InitializeComponent();
             m_MainCanvasContext = DataContext as MainCanvasContext;
+
+            m_ScaleTransform = new ScaleTransform();
+            NodeCanvasView.RenderTransform = m_ScaleTransform;
+        }
+
+
+        private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+
+            double ScaleRate = 1.1;
+
+            if (e.Delta > 0)
+            {
+                m_ScaleTransform.ScaleX *= ScaleRate;
+                m_ScaleTransform.ScaleY *= ScaleRate;
+            }
+            else
+            {
+                m_ScaleTransform.ScaleX /= ScaleRate;
+                m_ScaleTransform.ScaleY /= ScaleRate;
+            }
+
+            NodeCanvasView.Width = NodeCanvasView.ActualWidth / m_ScaleTransform.ScaleX;
+            NodeCanvasView.Height = NodeCanvasView.ActualHeight / m_ScaleTransform.ScaleY;
         }
 
         public void InsertNode(FSMNode node)

@@ -22,10 +22,7 @@ namespace eAIEditor
     [Serializable]
     public class FSMNode : INotifyPropertyChanged
     {
-        public Point Position {
-            set => View.Position = value;
-            get => View.Position;
-        }
+        public Point Position;
 
         [NonSerialized]
         private string _name;
@@ -57,6 +54,8 @@ namespace eAIEditor
 
         protected FSMNode m_Node;
 
+        protected Point m_DragPoint;
+
         public FSMNodeView(FSMNode node)
         {
             Debug.WriteLine("Creating Node...");
@@ -64,14 +63,6 @@ namespace eAIEditor
             DataContext = m_Node = node;
 
             GiveFeedback += FSMNodeView_GiveFeedback;
-        }
-
-        public Point Position {
-            get => new Point { X = Canvas.GetLeft(this), Y = Canvas.GetTop(this) };
-            set {
-                Canvas.SetLeft(this, (double)value.X);
-                Canvas.SetTop(this, (double)value.Y);
-            }
         }
   
         // INotifyPropertyChanged implement
@@ -91,16 +82,35 @@ namespace eAIEditor
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);
-            if (e.ChangedButton == MouseButton.Left) {
-                //DragMove();
+
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                m_DragPoint = e.GetPosition(this);
+            }
+        }
+
+        private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            if (e.ChangedButton == MouseButton.Left)
+            {
             }
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            if (e.LeftButton == MouseButtonState.Pressed) {
-                Position = e.GetPosition(UIHelper.FindParent<Canvas>(this));
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Point position = e.GetPosition(Parent as FrameworkElement);
+
+                m_Node.Position.X = position.X - m_DragPoint.X;
+                m_Node.Position.Y = position.Y - m_DragPoint.Y;
+
+                Canvas.SetLeft(this, m_Node.Position.X);
+                Canvas.SetTop(this, m_Node.Position.Y);
             }
         }
 
