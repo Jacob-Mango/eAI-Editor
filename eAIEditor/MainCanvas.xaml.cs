@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -31,9 +32,15 @@ namespace eAIEditor
 
     }
 
+    public partial class FSMTransition
+    { 
+
+    }
+
+
     public class MainCanvasContext: INotifyPropertyChanged
     {
-
+        public ObservableCollection<FSMNode> Nodes = new();
 
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
@@ -46,19 +53,22 @@ namespace eAIEditor
     /// </summary>
     public partial class MainCanvas : Window
     {
+        protected MainCanvasContext m_MainCanvasContext;
+
         public MainCanvas()
         {
             InitializeComponent();
+            DataContext = m_MainCanvasContext = new MainCanvasContext();
         }
 
         void InsertNode(FSMNode node)
         {
-
+            m_MainCanvasContext.Nodes.Insert(node);
         }
 
         void RemoveNode(FSMNode node)
         {
-
+            m_MainCanvasContext.Nodes.Remove(node);
         }
 
         private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -67,6 +77,11 @@ namespace eAIEditor
             ContextMenu cm = FindResource("MainCtxMenu") as ContextMenu;
             Debug.WriteLine(cm);
             cm.IsOpen = true;
+        }
+
+        private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("What");
         }
     }
 }

@@ -12,6 +12,6 @@
         </ContextMenu>
     </Window.Resources>
     <Grid>
-        <Canvas MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Canvas MouseDown="Canvas_MouseDown" MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>
