@@ -73,8 +73,15 @@
     <Compile Include="FSMState.cs" />
     <Compile Include="FSMTransition.cs" />
     <Compile Include="FSMVariable.cs" />
+    <Compile Include="MainCanvas.xaml.cs">
+      <DependentUpon>MainCanvas.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIHelper.cs" />
     <Compile Include="ViewModelBase.cs" />
+    <Page Include="MainCanvas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

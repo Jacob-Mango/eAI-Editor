@@ -64,15 +64,14 @@ namespace eAIEditor
         {
             MainWindowViewModel model = (MainWindowViewModel)DataContext;
 
-            OpenFileDialog dialog = new OpenFileDialog();
+            OpenFileDialog dialog = new OpenFileDialog {
+                InitialDirectory = "P:\\eai\\Scripts\\FSM",
+                Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*",
+                FilterIndex = 2,
+                RestoreDirectory = true
+            };
 
-            dialog.InitialDirectory = "P:\\eai\\Scripts\\FSM";
-            dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
-            dialog.FilterIndex = 2;
-            dialog.RestoreDirectory = true;
-
-            if (dialog.ShowDialog() == true)
-            {
+            if (dialog.ShowDialog() == true) {
                 model.Load(dialog.FileName);
             }
         }
@@ -86,8 +85,7 @@ namespace eAIEditor
         {
             MainWindowViewModel model = (MainWindowViewModel)DataContext;
 
-            if (model.NeedPath())
-            {
+            if (model.NeedPath()) {
                 SaveAs(target, e);
                 return;
             }
@@ -104,15 +102,14 @@ namespace eAIEditor
         {
             MainWindowViewModel model = (MainWindowViewModel)DataContext;
 
-            SaveFileDialog dialog = new SaveFileDialog();
+            SaveFileDialog dialog = new SaveFileDialog {
+                InitialDirectory = "P:\\eai\\Scripts\\FSM",
+                Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*",
+                FilterIndex = 2,
+                RestoreDirectory = true
+            };
 
-            dialog.InitialDirectory = "P:\\eai\\Scripts\\FSM";
-            dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
-            dialog.FilterIndex = 2;
-            dialog.RestoreDirectory = true;
-
-            if (dialog.ShowDialog() == true)
-            {
+            if (dialog.ShowDialog() == true) {
                 model.Save(dialog.FileName);
             }
         }
@@ -125,13 +122,11 @@ namespace eAIEditor
         const double ScaleRate = 1.1;
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (e.Delta > 0)
-            {
+            if (e.Delta > 0) {
                 st.ScaleX *= ScaleRate;
                 st.ScaleY *= ScaleRate;
             }
-            else
-            {
+            else {
                 st.ScaleX /= ScaleRate;
                 st.ScaleY /= ScaleRate;
             }
@@ -146,10 +141,9 @@ namespace eAIEditor
             dragStart = e.GetPosition(graphArea);
             element.CaptureMouse();
 
-            switch (element.DataContext.GetType())
-            {
-               // case typeof(FSMState):
-               //     break;
+            switch (element.DataContext.GetType()) {
+                // case typeof(FSMState):
+                //     break;
             }
         }
 
@@ -162,8 +156,7 @@ namespace eAIEditor
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (currentState == null && dragStart != null && e.LeftButton == MouseButtonState.Pressed)
-            {
+            if (currentState == null && dragStart != null && e.LeftButton == MouseButtonState.Pressed) {
                 var p2 = e.GetPosition(graphArea);
 
                 //p2.X -= dragStart.Value.X;
@@ -181,10 +174,8 @@ namespace eAIEditor
         {
             Selected = selected;
 
-            if (Selected != null)
-            {
-                if (Selected.GetType() == typeof(FSMState))
-                {
+            if (Selected != null) {
+                if (Selected.GetType() == typeof(FSMState)) {
                     FSMState state = (FSMState)Selected;
 
                     Control_State.Visibility = Visibility.Visible;
@@ -196,8 +187,7 @@ namespace eAIEditor
                     return;
                 }
 
-                if (Selected.GetType() == typeof(FSMTransition))
-                {
+                if (Selected.GetType() == typeof(FSMTransition)) {
                     FSMTransition transition = (FSMTransition)Selected;
 
                     Control_State.Visibility = Visibility.Hidden;
@@ -238,8 +228,7 @@ namespace eAIEditor
 
         private void State_MouseMove(object sender, MouseEventArgs e)
         {
-            if (currentState != null && dragStart != null && e.LeftButton == MouseButtonState.Pressed)
-            {
+            if (currentState != null && dragStart != null && e.LeftButton == MouseButtonState.Pressed) {
                 var p2 = e.GetPosition(canvas);
                 if (currentState == null) return;
 
@@ -247,7 +236,6 @@ namespace eAIEditor
                 currentState.Y = p2.Y - dragStart.Value.Y;
             }
         }
-
 
         private void TransitionSource_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -280,15 +268,13 @@ namespace eAIEditor
 
         private void TransitionSource_MouseMove(object sender, MouseEventArgs e)
         {
-            if (currentTransition != null && dragStart != null && e.LeftButton == MouseButtonState.Pressed)
-            {
+            if (currentTransition != null && dragStart != null && e.LeftButton == MouseButtonState.Pressed) {
                 var p2 = e.GetPosition(canvas);
                 if (currentTransition == null) return;
 
                 var state = currentTransition.Source;
 
-                if (state != null)
-                {
+                if (state != null) {
                     if (state == currentTransition.Destination) currentTransition.Source = null;
                     else if (p2.X + 50 < state.X) currentTransition.Source = null;
                     else if (p2.Y + 50 < state.Y) currentTransition.Source = null;
@@ -302,8 +288,7 @@ namespace eAIEditor
 
                 currentTransition.Source = hoveringState;
 
-                if (currentTransition.Source == null)
-                {
+                if (currentTransition.Source == null) {
                     currentTransition.SrcX = p2.X - dragStart.Value.X;
                     currentTransition.SrcY = p2.Y - dragStart.Value.Y;
                     return;
@@ -345,15 +330,13 @@ namespace eAIEditor
 
         private void TransitionDestination_MouseMove(object sender, MouseEventArgs e)
         {
-            if (currentTransition != null && dragStart != null && e.LeftButton == MouseButtonState.Pressed)
-            {
+            if (currentTransition != null && dragStart != null && e.LeftButton == MouseButtonState.Pressed) {
                 var p2 = e.GetPosition(canvas);
                 if (currentTransition == null) return;
 
                 var state = currentTransition.Destination;
 
-                if (state != null)
-                {
+                if (state != null) {
                     if (state == currentTransition.Source) currentTransition.Destination = null;
                     else if (p2.X + 50 < state.X) currentTransition.Destination = null;
                     else if (p2.Y + 50 < state.Y) currentTransition.Destination = null;
@@ -367,8 +350,7 @@ namespace eAIEditor
 
                 currentTransition.Destination = hoveringState;
 
-                if (currentTransition.Destination == null)
-                {
+                if (currentTransition.Destination == null) {
                     currentTransition.DstX = p2.X - dragStart.Value.X;
                     currentTransition.DstY = p2.Y - dragStart.Value.Y;
                     return;

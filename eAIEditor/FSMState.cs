@@ -20,6 +20,7 @@ using System.Xml;
 
 namespace eAIEditor
 {
+    /*
     public class FSMState : ViewModelBase
     {
         public FSMState(XmlNode node)
@@ -154,5 +155,5 @@ namespace eAIEditor
             get { return _EventUpdate; }
             set { _EventUpdate = value; OnPropertyChanged(); }
         }
-    }
+    }*/
 }
