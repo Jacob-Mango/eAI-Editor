@@ -5,15 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:eAIEditor"
              mc:Ignorable="d" 
-             Height="100"
-             Width="250"
-             d:DesignHeight="100" d:DesignWidth="250" HorizontalAlignment="Left" VerticalAlignment="Top">
+             Height="40"
+             Width="150">
 
     <Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Stretch">
-        <Grid Background="Coral" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
-            <Button x:Name="NodeRightButton" Width="15" Height="15" HorizontalAlignment="Right" Click="NodeRight_Click"/>
-            <Button x:Name="NodeLeftButton"  Width="15" Height="15" HorizontalAlignment="Left" Click="NodeLeft_Click"/>
-            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+		<Grid Background="Coral" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+			<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
     </Border>
 

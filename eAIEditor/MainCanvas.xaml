@@ -6,14 +6,19 @@
         xmlns:local="clr-namespace:eAIEditor"
         mc:Ignorable="d"
         Title="MainCanvas" Height="720" Width="1280">
+	
     <Window.DataContext>
         <local:MainCanvasContext/>
-    </Window.DataContext>
-    <Window.Resources>
-        <ContextMenu x:Key="MainCtxMenu">
+	</Window.DataContext>
+
+	<Window.Resources>
+		<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
+		<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
+		<ContextMenu x:Key="MainCtxMenu">
             <MenuItem Header="Add Node" Click="AddNode_Click"/>
         </ContextMenu>
     </Window.Resources>
+	
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">

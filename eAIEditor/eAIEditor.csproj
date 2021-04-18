@@ -74,18 +74,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FSMNode.xaml.cs">
-      <DependentUpon>FSMNode.xaml</DependentUpon>
+    <Compile Include="FSMState.xaml.cs">
+      <DependentUpon>FSMState.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FSMState.cs" />
-    <Compile Include="FSMTransition.cs" />
-    <Compile Include="FSMVariable.cs" />
+    <Compile Include="FSMTransition.xaml.cs">
+      <DependentUpon>FSMTransition.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainCanvas.xaml.cs">
       <DependentUpon>MainCanvas.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIHelper.cs" />
-    <Compile Include="ViewModelBase.cs" />
-    <Page Include="FSMNode.xaml">
+    <Page Include="FSMState.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FSMTransition.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -99,7 +102,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

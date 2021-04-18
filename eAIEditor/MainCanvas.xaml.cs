@@ -21,7 +21,7 @@ namespace eAIEditor
 {
     public class MainCanvasContext : INotifyPropertyChanged
     {
-        public ObservableCollection<FSMState> Nodes { get; } = new ObservableCollection<FSMState>();
+        public ObservableCollection<FSMState> States { get; } = new ObservableCollection<FSMState>();
         public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
 
         // INotifyPropertyChanged implement
@@ -29,11 +29,6 @@ namespace eAIEditor
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public class FSMTransition
-    {
-        public FSMState Node0;
-        public FSMState Node1;
-    }
 
     /// <summary>
     /// Interaction logic for MainCanvas.xaml
@@ -43,6 +38,8 @@ namespace eAIEditor
         protected ScaleTransform m_ScaleTransform;
         protected MainCanvasContext m_MainCanvasContext;
 
+        public bool m_HandlingSomething;
+
         public MainCanvas()
         {
             InitializeComponent();
@@ -51,7 +48,6 @@ namespace eAIEditor
             m_ScaleTransform = new ScaleTransform();
             NodeCanvasView.RenderTransform = m_ScaleTransform;
         }
-
 
         private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -72,40 +68,32 @@ namespace eAIEditor
             NodeCanvasView.Height = NodeCanvasView.ActualHeight / m_ScaleTransform.ScaleY;
         }
 
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
-
-            foreach (FSMTransition transition in m_MainCanvasContext.Transitions) {
-                Debug.WriteLine("Drawing");
-                if (transition.Node0 == null || transition.Node1 == null) {
-                    continue;
-                }
-
-                drawingContext.DrawLine(new Pen(Brushes.Black, 2.0), transition.Node0.Position, transition.Node1.Position);
-            }
-        }
-
         public void InsertNode(FSMState node)
         {
-            m_MainCanvasContext.Nodes.Add(node);
+            node.MainCanvas = this;
+
+            m_MainCanvasContext.States.Add(node);
             NodeCanvasView.Children.Add(node.View);
         }
 
         public void RemoveNode(FSMState node)
         {
-            m_MainCanvasContext.Nodes.Remove(node);
+            m_MainCanvasContext.States.Remove(node);
             NodeCanvasView.Children.Remove(node.View);
         }
 
         public void AddTransition(FSMTransition transition)
         {
+            transition.MainCanvas = this;
+
             m_MainCanvasContext.Transitions.Add(transition);
+            NodeCanvasView.Children.Add(transition.View);
         }
 
         public void RemoveTransition(FSMTransition transition)
         {
             m_MainCanvasContext.Transitions.Remove(transition);
+            NodeCanvasView.Children.Remove(transition.View);
         }
 
         private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -118,7 +106,7 @@ namespace eAIEditor
         {
             MenuItem item = sender as MenuItem;
             FSMState node = new FSMState {
-                Name = "node0",
+                Name = "state",
                 Position = item.PointToScreen(new Point())
             };
 
@@ -126,11 +114,11 @@ namespace eAIEditor
             InsertNode(node);
 
             // testing
-            if (m_MainCanvasContext.Nodes.Count() == 2) {
+            if (m_MainCanvasContext.States.Count() == 2) {
                 Debug.WriteLine("Hi");
                 FSMTransition transition = new FSMTransition() {
-                    Node0 = m_MainCanvasContext.Nodes[0],
-                    Node1 = m_MainCanvasContext.Nodes[1]
+                    Source = m_MainCanvasContext.States[0],
+                    Destination = m_MainCanvasContext.States[1]
                 };
 
                 AddTransition(transition);

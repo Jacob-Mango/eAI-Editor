@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="eAIEditor.FSMTransitionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:eAIEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+	
+	<Canvas Background="White">
+		<Canvas.Resources>
+			<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
+			<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
+		</Canvas.Resources>
+		
+		<Line X1="{Binding SrcX}" Y1="{Binding SrcY}" X2="{Binding DstX}" Y2="{Binding DstY}" Stroke="Black" StrokeThickness="2"/>
+		<Ellipse Visibility="{Binding DraggingSource, Converter={StaticResource InvertBooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Black" StrokeThickness="1" Canvas.Left="{Binding SrcX}" Canvas.Top="{Binding SrcY}" Margin="-6,-6,0,0" MouseDown="TransitionSource_MouseDown" MouseUp="TransitionSource_MouseUp" MouseMove="TransitionSource_MouseMove" />
+		<Ellipse Visibility="{Binding DraggingDestination, Converter={StaticResource InvertBooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Black" StrokeThickness="1" Canvas.Left="{Binding DstX}" Canvas.Top="{Binding DstY}" Margin="-6,-6,0,0" MouseDown="TransitionDestination_MouseDown" MouseUp="TransitionDestination_MouseUp" MouseMove="TransitionDestination_MouseMove" />
+
+		<Ellipse Visibility="{Binding DraggingSource, Converter={StaticResource BooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Red" StrokeThickness="1" Canvas.Left="{Binding SrcX}" Canvas.Top="{Binding SrcY}" Margin="-6,-6,0,0" MouseDown="TransitionSource_MouseDown" MouseUp="TransitionSource_MouseUp" MouseMove="TransitionSource_MouseMove" />
+		<Ellipse Visibility="{Binding DraggingDestination, Converter={StaticResource BooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Red" StrokeThickness="1" Canvas.Left="{Binding DstX}" Canvas.Top="{Binding DstY}" Margin="-6,-6,0,0" MouseDown="TransitionDestination_MouseDown" MouseUp="TransitionDestination_MouseUp" MouseMove="TransitionDestination_MouseMove" />
+	</Canvas>
+
+</UserControl>
