@@ -48,6 +48,10 @@ namespace eAIEditor
 
     public partial class FSMNode : UserControl, INotifyPropertyChanged
     {
+        public static readonly Brush BRUSH_DEFAULT = Brushes.Black;
+        public static readonly Brush BRUSH_HIGHLIGHT = Brushes.CadetBlue;
+        public static readonly Brush BRUSH_SELECTED = Brushes.White;
+
         private FSMNodeData _Data;
         public FSMNodeData Data {
             get => _Data;
@@ -75,5 +79,30 @@ namespace eAIEditor
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            HighlightBorder.BorderBrush = BRUSH_HIGHLIGHT;
+        }
+
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            HighlightBorder.BorderBrush = BRUSH_DEFAULT;
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left) {
+                //DragMove();
+            }
+        }
+
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if (e.LeftButton == MouseButtonState.Pressed) {
+                SetPosition(e.GetPosition());
+            }
+        }
     }
 }

@@ -5,8 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:eAIEditor"
              mc:Ignorable="d" 
+             Height="100"
+             Width="250"
              d:DesignHeight="100" d:DesignWidth="250">
-    <Grid Background="Coral">
-        <TextBlock Text="{Binding Name}" />
-    </Grid>
+    <Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2">
+        <Grid Background="Coral" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+            <TextBlock Text="{Binding Name}" />
+        </Grid>
+    </Border>
 </UserControl>

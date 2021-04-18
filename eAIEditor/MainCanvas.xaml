@@ -22,6 +22,8 @@
                 <MenuItem Header="_Save"/>
                 <MenuItem Header="_Save As"/>
                 <MenuItem Header="_Close"/>
+                <Separator/>
+                <MenuItem Header="_Exit"/>
             </MenuItem>
         </Menu>
         <Grid>
