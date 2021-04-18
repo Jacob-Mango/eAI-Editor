@@ -21,13 +21,19 @@ namespace eAIEditor
 {
     public class MainCanvasContext : INotifyPropertyChanged
     {
-        public ObservableCollection<FSMNode> Nodes { get; set; } = new ObservableCollection<FSMNode>();
+        public ObservableCollection<FSMNode> Nodes { get; } = new ObservableCollection<FSMNode>();
+        public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
 
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    public class FSMTransition
+    {
+        public FSMNode Node0;
+        public FSMNode Node1;
+    }
 
     /// <summary>
     /// Interaction logic for MainCanvas.xaml
@@ -66,6 +72,19 @@ namespace eAIEditor
 
             NodeCanvasView.Width = NodeCanvasView.ActualWidth / m_ScaleTransform.ScaleX;
             NodeCanvasView.Height = NodeCanvasView.ActualHeight / m_ScaleTransform.ScaleY;
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+
+            foreach (FSMTransition transition in m_MainCanvasContext.Transitions) {
+                if (transition.Node0 == null || transition.Node1 == null) {
+                    continue;
+                }
+
+                drawingContext.DrawLine(new Pen(Brushes.Black, 2.0), transition.Node0.Position, transition.Node1.Position);
+            }
         }
 
         public void InsertNode(FSMNode node)
