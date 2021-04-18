@@ -65,8 +65,7 @@ namespace eAIEditor
         {
             Debug.WriteLine("Creating Node...");
             InitializeComponent();
-            Data = data;
-            DataContext = Data;
+            DataContext = Data = data;
         }
 
         public void SetPosition(Point position)
