@@ -79,6 +79,7 @@ namespace eAIEditor
             base.OnRender(drawingContext);
 
             foreach (FSMTransition transition in m_MainCanvasContext.Transitions) {
+                Debug.WriteLine("Drawing");
                 if (transition.Node0 == null || transition.Node1 == null) {
                     continue;
                 }
@@ -99,6 +100,16 @@ namespace eAIEditor
             NodeCanvasView.Children.Remove(node.View);
         }
 
+        public void AddTransition(FSMTransition transition)
+        {
+            m_MainCanvasContext.Transitions.Add(transition);
+        }
+
+        public void RemoveTransition(FSMTransition transition)
+        {
+            m_MainCanvasContext.Transitions.Remove(transition);
+        }
+
         private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             ContextMenu cm = FindResource("MainCtxMenu") as ContextMenu;
@@ -114,8 +125,19 @@ namespace eAIEditor
             };
 
             Debug.WriteLine(item.PointToScreen(new Point()));
-
             InsertNode(node);
+
+            // testing
+            if (m_MainCanvasContext.Nodes.Count() == 2) {
+                Debug.WriteLine("Hi");
+                FSMTransition transition = new FSMTransition() {
+                    Node0 = m_MainCanvasContext.Nodes[0],
+                    Node1 = m_MainCanvasContext.Nodes[1]
+                };
+
+                AddTransition(transition);
+            }
+
         }
     }
 }
