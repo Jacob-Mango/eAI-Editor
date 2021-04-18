@@ -20,7 +20,7 @@ using System.Xml;
 
 namespace eAIEditor
 {
-    public class FSMVariable : ViewModelBase
+    /*public class FSMVariable : ViewModelBase
     {
         public FSMVariable(XmlElement element)
         {
@@ -59,5 +59,5 @@ namespace eAIEditor
             get { return _Default; }
             set { _Default = value; OnPropertyChanged(); }
         }
-    }
+    }*/
 }

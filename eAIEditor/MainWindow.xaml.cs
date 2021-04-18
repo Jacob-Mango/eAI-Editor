@@ -24,7 +24,7 @@ namespace eAIEditor
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    /*public partial class MainWindow : Window
     {
         Nullable<Point> dragStart = null;
 
@@ -399,5 +399,5 @@ namespace eAIEditor
         {
             throw new NotImplementedException();
         }
-    }
+    }*/
 }

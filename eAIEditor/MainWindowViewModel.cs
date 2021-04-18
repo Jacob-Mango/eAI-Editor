@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace eAIEditor
 {
-    public class MainWindowViewModel
+    /*public class MainWindowViewModel
     {
         public ObservableCollection<FSMState> States { get; } = new ObservableCollection<FSMState>();
         public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
@@ -106,5 +106,5 @@ namespace eAIEditor
             Items.Add(transition);
             Transitions.Add(transition);
         }
-    }
+    }*/
 }

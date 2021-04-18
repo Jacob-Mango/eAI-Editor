@@ -20,7 +20,7 @@ using System.Xml;
 
 namespace eAIEditor
 {
-    public class FSMTransition : ViewModelBase
+    /*public class FSMTransition : ViewModelBase
     {
         public FSMTransition(ObservableCollection<FSMState> states, XmlNode node)
         {
@@ -267,5 +267,5 @@ namespace eAIEditor
                 }
             }
         }
-    }
+    }*/
 }

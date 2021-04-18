@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -58,6 +59,14 @@ namespace eAIEditor
         void RemoveNode(FSMNode node)
         {
 
+        }
+
+        private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine(sender);
+            ContextMenu cm = FindResource("MainCtxMenu") as ContextMenu;
+            Debug.WriteLine(cm);
+            cm.IsOpen = true;
         }
     }
 }

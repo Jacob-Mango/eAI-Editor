@@ -6,7 +6,12 @@
         xmlns:local="clr-namespace:eAIEditor"
         mc:Ignorable="d"
         Title="MainCanvas" Height="450" Width="800">
+    <Window.Resources>
+        <ContextMenu x:Key="MainCtxMenu">
+            <MenuItem  Header="Add Node"/>
+        </ContextMenu>
+    </Window.Resources>
     <Grid>
-        
+        <Canvas MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>
