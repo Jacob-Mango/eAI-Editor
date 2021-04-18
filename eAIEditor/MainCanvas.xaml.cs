@@ -21,7 +21,7 @@ namespace eAIEditor
 {
     public class MainCanvasContext : INotifyPropertyChanged
     {
-        public ObservableCollection<FSMNode> Nodes { get; } = new ObservableCollection<FSMNode>();
+        public ObservableCollection<FSMState> Nodes { get; } = new ObservableCollection<FSMState>();
         public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
 
         // INotifyPropertyChanged implement
@@ -31,8 +31,8 @@ namespace eAIEditor
 
     public class FSMTransition
     {
-        public FSMNode Node0;
-        public FSMNode Node1;
+        public FSMState Node0;
+        public FSMState Node1;
     }
 
     /// <summary>
@@ -59,13 +59,11 @@ namespace eAIEditor
 
             double ScaleRate = 1.1;
 
-            if (e.Delta > 0)
-            {
+            if (e.Delta > 0) {
                 m_ScaleTransform.ScaleX *= ScaleRate;
                 m_ScaleTransform.ScaleY *= ScaleRate;
             }
-            else
-            {
+            else {
                 m_ScaleTransform.ScaleX /= ScaleRate;
                 m_ScaleTransform.ScaleY /= ScaleRate;
             }
@@ -88,13 +86,13 @@ namespace eAIEditor
             }
         }
 
-        public void InsertNode(FSMNode node)
+        public void InsertNode(FSMState node)
         {
             m_MainCanvasContext.Nodes.Add(node);
             NodeCanvasView.Children.Add(node.View);
         }
 
-        public void RemoveNode(FSMNode node)
+        public void RemoveNode(FSMState node)
         {
             m_MainCanvasContext.Nodes.Remove(node);
             NodeCanvasView.Children.Remove(node.View);
@@ -119,7 +117,7 @@ namespace eAIEditor
         private void AddNode_Click(object sender, RoutedEventArgs e)
         {
             MenuItem item = sender as MenuItem;
-            FSMNode node = new FSMNode {
+            FSMState node = new FSMState {
                 Name = "node0",
                 Position = item.PointToScreen(new Point())
             };
@@ -137,7 +135,6 @@ namespace eAIEditor
 
                 AddTransition(transition);
             }
-
         }
     }
 }

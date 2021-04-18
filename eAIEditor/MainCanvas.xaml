@@ -42,7 +42,7 @@
 
 			<TreeView Grid.Column="0" x:Name="NodeTreeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Path=Nodes}">
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type local:FSMNode}">
+                    <HierarchicalDataTemplate DataType="{x:Type local:FSMState}">
                         <TreeViewItem Header="{Binding Path=Name}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>

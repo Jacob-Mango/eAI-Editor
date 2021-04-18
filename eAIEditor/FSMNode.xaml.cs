@@ -20,7 +20,7 @@ namespace eAIEditor
 {
     // Serialized node
     [Serializable]
-    public class FSMNode : INotifyPropertyChanged
+    public class FSMState : INotifyPropertyChanged
     {
         public Point Position;
 
@@ -34,11 +34,11 @@ namespace eAIEditor
             get => _name;
         }
 
-        public FSMNodeView View { get; protected set; }
+        public FSMStateView View { get; protected set; }
 
-        public FSMNode()
+        public FSMState()
         {
-            View = new FSMNodeView(this);
+            View = new FSMStateView(this);
         }
 
         // INotifyPropertyChanged implement
@@ -46,21 +46,21 @@ namespace eAIEditor
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public partial class FSMNodeView : UserControl
+    public partial class FSMStateView : UserControl
     {
         public static readonly Brush BRUSH_DEFAULT = Brushes.Black;
         public static readonly Brush BRUSH_HIGHLIGHT = Brushes.CadetBlue;
         public static readonly Brush BRUSH_SELECTED = Brushes.White;
 
-        protected FSMNode m_Node;
+        protected FSMState m_State;
 
         protected Point m_DragPoint;
 
-        public FSMNodeView(FSMNode node)
+        public FSMStateView(FSMState node)
         {
             Debug.WriteLine("Creating Node...");
             InitializeComponent();
-            DataContext = m_Node = node;
+            DataContext = m_State = node;
 
             GiveFeedback += FSMNodeView_GiveFeedback;
         }
@@ -106,11 +106,11 @@ namespace eAIEditor
             {
                 Point position = e.GetPosition(Parent as FrameworkElement);
 
-                m_Node.Position.X = position.X - m_DragPoint.X;
-                m_Node.Position.Y = position.Y - m_DragPoint.Y;
+                m_State.Position.X = position.X - m_DragPoint.X;
+                m_State.Position.Y = position.Y - m_DragPoint.Y;
 
-                Canvas.SetLeft(this, m_Node.Position.X);
-                Canvas.SetTop(this, m_Node.Position.Y);
+                Canvas.SetLeft(this, m_State.Position.X);
+                Canvas.SetTop(this, m_State.Position.Y);
             }
         }
 
