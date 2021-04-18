@@ -53,5 +53,19 @@ namespace eAIEditor
 
             return foundChild;
         }
+
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            //get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            //we've reached the end of the tree
+            if (parentObject == null) {
+                return null;
+            }
+
+            //check if the parent matches the type we're looking for
+            return parentObject is T parent ? parent : FindParent<T>(parentObject);
+        }
     }
 }

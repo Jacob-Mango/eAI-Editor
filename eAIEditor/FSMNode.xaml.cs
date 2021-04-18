@@ -62,6 +62,8 @@ namespace eAIEditor
             Debug.WriteLine("Creating Node...");
             InitializeComponent();
             DataContext = m_Node = node;
+
+            GiveFeedback += FSMNodeView_GiveFeedback;
         }
 
         public Point Position {
@@ -98,7 +100,7 @@ namespace eAIEditor
         {
             base.OnMouseMove(e);
             if (e.LeftButton == MouseButtonState.Pressed) {
-                //SetPosition(e.GetPosition());
+                Position = e.GetPosition(UIHelper.FindParent<Canvas>(this));
             }
         }
 
@@ -110,6 +112,11 @@ namespace eAIEditor
         private void NodeLeft_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void FSMNodeView_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            Debug.WriteLine(e.Effects);
         }
     }
 }

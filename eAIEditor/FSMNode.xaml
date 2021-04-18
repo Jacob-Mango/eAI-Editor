@@ -8,11 +8,13 @@
              Height="100"
              Width="250"
              d:DesignHeight="100" d:DesignWidth="250">
-    <Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2">
+
+    <Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Stretch">
         <Grid Background="Coral" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
             <Button x:Name="NodeRightButton" Width="15" Height="15" HorizontalAlignment="Right" Click="NodeRight_Click"/>
             <Button x:Name="NodeLeftButton"  Width="15" Height="15" HorizontalAlignment="Left" Click="NodeLeft_Click"/>
             <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
     </Border>
+
 </UserControl>

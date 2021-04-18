@@ -68,6 +68,8 @@ namespace eAIEditor
                 Position = item.PointToScreen(new Point())
             };
 
+            Debug.WriteLine(item.PointToScreen(new Point()));
+
             InsertNode(node);
         }
     }
