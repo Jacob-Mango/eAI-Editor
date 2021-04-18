@@ -21,7 +21,7 @@ namespace eAIEditor
 {
     public class MainCanvasContext : INotifyPropertyChanged
     {
-        public ObservableCollection<FSMNode> Nodes = new ObservableCollection<FSMNode>();
+        public ObservableCollection<FSMNode> Nodes { get; set; } = new ObservableCollection<FSMNode>();
 
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
@@ -45,13 +45,13 @@ namespace eAIEditor
         public void InsertNode(FSMNode node)
         {
             m_MainCanvasContext.Nodes.Add(node);
-            NodeCanvasView.Children.Add(node);
+            NodeCanvasView.Children.Add(node.View);
         }
 
         public void RemoveNode(FSMNode node)
         {
             m_MainCanvasContext.Nodes.Remove(node);
-            NodeCanvasView.Children.Remove(node);
+            NodeCanvasView.Children.Remove(node.View);
         }
 
         private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -62,16 +62,13 @@ namespace eAIEditor
 
         private void AddNode_Click(object sender, RoutedEventArgs e)
         {
-            FSMNodeData node_data = new FSMNodeData {
-                Name = "Test"
+            MenuItem item = sender as MenuItem;
+            FSMNode node = new FSMNode {
+                Name = "Test",
+                Position = item.PointToScreen(new Point())
             };
 
-            FSMNode node = new FSMNode(node_data);
             InsertNode(node);
-
-            MenuItem item = sender as MenuItem;
-            
-            node.SetPosition(item.PointToScreen(new Point()));
         }
     }
 }

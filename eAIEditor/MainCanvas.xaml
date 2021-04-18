@@ -32,10 +32,10 @@
                 <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
 
-            <TreeView Grid.Column="0" x:Name="NodeTreeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Nodes}">
+            <TreeView Grid.Column="0" x:Name="NodeTreeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Path=Nodes}">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type local:FSMNode}">
-                        <TreeViewItem Header="{Binding Path=Data.Name}"/>
+                        <TreeViewItem Header="{Binding Path=Name}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>
             </TreeView>

@@ -18,9 +18,16 @@ using System.Windows.Shapes;
 
 namespace eAIEditor
 {
-    public partial class FSMNodeData : INotifyPropertyChanged
+
+    public class FSMNode : INotifyPropertyChanged
     {
-        public Point Poisiton;
+        public Point Position {
+            set {
+                View.SetPosition(value);
+                OnPropertyChanged();
+            }
+            get => View.GetPosition();
+        }
 
         private string _name;
         public string Name {
@@ -31,49 +38,40 @@ namespace eAIEditor
             get => _name;
         }
 
+        public FSMNodeView View { get; protected set; }
+
+        public FSMNode()
+        {
+            View = new FSMNodeView(this);
+        }
+
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public class FSMState : FSMNodeData
-    {
-
-    }
-
-    public partial class FSMTransition
-    {
-
-    }
-
-    public partial class FSMNode : UserControl, INotifyPropertyChanged
+    public partial class FSMNodeView : UserControl
     {
         public static readonly Brush BRUSH_DEFAULT = Brushes.Black;
         public static readonly Brush BRUSH_HIGHLIGHT = Brushes.CadetBlue;
         public static readonly Brush BRUSH_SELECTED = Brushes.White;
 
-        private FSMNodeData _Data;
-        public FSMNodeData Data {
-            get => _Data;
-            set {
-                _Data = value;
-                OnPropertyChanged();
-            }
-        }
+        protected FSMNode m_Node;
 
-        public FSMNode(FSMNodeData data)
+        public FSMNodeView(FSMNode node)
         {
             Debug.WriteLine("Creating Node...");
             InitializeComponent();
-            DataContext = Data = data;
+            DataContext = m_Node = node;
         }
 
         public void SetPosition(Point position)
         {
-            Data.Poisiton = position;
             Canvas.SetLeft(this, (double)position.X);
             Canvas.SetTop(this, (double)position.Y);
         }
+
+        public Point GetPosition() => new Point { X = Canvas.GetLeft(this), Y = Canvas.GetTop(this) };
 
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
@@ -100,7 +98,7 @@ namespace eAIEditor
         {
             base.OnMouseMove(e);
             if (e.LeftButton == MouseButtonState.Pressed) {
-                SetPosition(e.GetPosition());
+                //SetPosition(e.GetPosition());
             }
         }
     }
