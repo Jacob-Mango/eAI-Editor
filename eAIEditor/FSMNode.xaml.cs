@@ -46,23 +46,34 @@ namespace eAIEditor
 
     }
 
-    public partial class FSMNode : UserControl
+    public partial class FSMNode : UserControl, INotifyPropertyChanged
     {
-        protected FSMNodeData m_FSMNodeData;
+        private FSMNodeData _Data;
+        public FSMNodeData Data {
+            get => _Data;
+            set {
+                _Data = value;
+                OnPropertyChanged();
+            }
+        }
 
         public FSMNode(FSMNodeData data)
         {
             Debug.WriteLine("Creating Node...");
             InitializeComponent();
-            m_FSMNodeData = data;
-            DataContext = m_FSMNodeData;
+            Data = data;
+            DataContext = Data;
         }
 
         public void SetPosition(Point position)
         {
-            m_FSMNodeData.Poisiton = position;
+            Data.Poisiton = position;
             Canvas.SetLeft(this, (double)position.X);
             Canvas.SetTop(this, (double)position.Y);
         }
+
+        // INotifyPropertyChanged implement
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

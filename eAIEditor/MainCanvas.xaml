@@ -5,17 +5,43 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:eAIEditor"
         mc:Ignorable="d"
-        Title="MainCanvas" Height="450" Width="800">
+        Title="MainCanvas" Height="720" Width="1280">
+    <Window.DataContext>
+        <local:MainCanvasContext/>
+    </Window.DataContext>
     <Window.Resources>
         <ContextMenu x:Key="MainCtxMenu">
             <MenuItem Header="Add Node" Click="AddNode_Click"/>
         </ContextMenu>
     </Window.Resources>
-    <Grid>
-        <Canvas x:Name="CanvasView" MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Canvas.Background>
-                <SolidColorBrush Color="White" Opacity="0"/>
-            </Canvas.Background>
-        </Canvas>
-    </Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New"/>
+                <MenuItem Header="_Open"/>
+                <MenuItem Header="_Save"/>
+                <MenuItem Header="_Save As"/>
+                <MenuItem Header="_Close"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="5*"/>
+            </Grid.ColumnDefinitions>
+
+            <TreeView Grid.Column="0" x:Name="NodeTreeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Nodes}">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type local:FSMNode}">
+                        <TreeViewItem Header="{Binding Path=Data.Name}"/>
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+            <Canvas Grid.Column="1" x:Name="NodeCanvasView" MouseRightButtonDown="Canvas_MouseRightButtonDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Canvas.Background>
+                    <SolidColorBrush Color="White" Opacity="0"/>
+                </Canvas.Background>
+            </Canvas>
+        </Grid>
+    </DockPanel>
 </Window>

@@ -19,7 +19,7 @@ using System.Windows.Shapes;
 
 namespace eAIEditor
 {
-    public class MainCanvasContext: INotifyPropertyChanged
+    public class MainCanvasContext : INotifyPropertyChanged
     {
         public ObservableCollection<FSMNode> Nodes = new ObservableCollection<FSMNode>();
 
@@ -39,19 +39,19 @@ namespace eAIEditor
         public MainCanvas()
         {
             InitializeComponent();
-            DataContext = m_MainCanvasContext = new MainCanvasContext();
+            m_MainCanvasContext = DataContext as MainCanvasContext;
         }
 
-        void InsertNode(FSMNode node)
+        public void InsertNode(FSMNode node)
         {
             m_MainCanvasContext.Nodes.Add(node);
-            CanvasView.Children.Add(node);
+            NodeCanvasView.Children.Add(node);
         }
 
-        void RemoveNode(FSMNode node)
+        public void RemoveNode(FSMNode node)
         {
             m_MainCanvasContext.Nodes.Remove(node);
-            CanvasView.Children.Remove(node);
+            NodeCanvasView.Children.Remove(node);
         }
 
         private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -62,7 +62,6 @@ namespace eAIEditor
 
         private void AddNode_Click(object sender, RoutedEventArgs e)
         {
-
             FSMNodeData node_data = new FSMNodeData {
                 Name = "Test"
             };
@@ -72,7 +71,7 @@ namespace eAIEditor
 
             MenuItem item = sender as MenuItem;
             
-            node.SetPosition(item.RenderTransformOrigin);
+            node.SetPosition(item.PointToScreen(new Point()));
         }
     }
 }
