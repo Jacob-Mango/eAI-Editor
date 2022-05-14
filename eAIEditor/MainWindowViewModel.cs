@@ -40,7 +40,7 @@ namespace eAIEditor
             {
                 writer.WriteStartDocument();
 
-                writer.WriteStartElement("hfsm");
+                writer.WriteStartElement("fsm");
                 writer.WriteAttributeString("name", FSMName);
                 writer.WriteStartElement("states");
                 writer.WriteAttributeString("default", DefaultState);
@@ -77,8 +77,8 @@ namespace eAIEditor
             XmlDocument doc = new XmlDocument();
             doc.Load(File);
 
-            FSMName = doc["hfsm"].GetAttribute("name");
-            XmlElement states = doc["hfsm"]["states"];
+            FSMName = doc["fsm"].GetAttribute("name");
+            XmlElement states = doc["fsm"]["states"];
             DefaultState = states.GetAttribute("default");
 
             foreach (XmlNode node in states.ChildNodes)
@@ -86,7 +86,7 @@ namespace eAIEditor
                 AddState(node);
             }
 
-            XmlElement transitions = doc["hfsm"]["transitions"];
+            XmlElement transitions = doc["fsm"]["transitions"];
             foreach (XmlNode node in transitions.ChildNodes)
             {
                 AddTransition(node);
