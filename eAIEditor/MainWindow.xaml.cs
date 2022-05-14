@@ -28,7 +28,8 @@ namespace eAIEditor
     {
         Nullable<Point> dragStart = null;
 
-        MainWindowViewModel VM;
+        List<FSM> AllFSMs;
+        FSM CurrentFSM;
 
         ViewModelBase Selected;
 
@@ -43,15 +44,13 @@ namespace eAIEditor
         {
             InitializeComponent();
 
-            VM = (MainWindowViewModel)DataContext;
-
             st = new ScaleTransform();
             canvas.RenderTransform = st;
         }
 
         void New(object target, ExecutedRoutedEventArgs e)
         {
-            MainWindowViewModel model = (MainWindowViewModel)DataContext;
+            FSM model = (FSM)DataContext;
             model.New();
         }
 
@@ -62,11 +61,11 @@ namespace eAIEditor
 
         void Open(object target, ExecutedRoutedEventArgs e)
         {
-            MainWindowViewModel model = (MainWindowViewModel)DataContext;
+            FSM model = (FSM)DataContext;
 
             OpenFileDialog dialog = new OpenFileDialog();
 
-            dialog.InitialDirectory = "P:\\eai\\Scripts\\FSM";
+            dialog.InitialDirectory = "P:\\DayZExpansion\\AI\\Scripts\\FSM";
             dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
             dialog.FilterIndex = 2;
             dialog.RestoreDirectory = true;
@@ -84,7 +83,7 @@ namespace eAIEditor
 
         void Save(object target, ExecutedRoutedEventArgs e)
         {
-            MainWindowViewModel model = (MainWindowViewModel)DataContext;
+            FSM model = (FSM)DataContext;
 
             if (model.NeedPath())
             {
@@ -102,7 +101,7 @@ namespace eAIEditor
 
         void SaveAs(object target, ExecutedRoutedEventArgs e)
         {
-            MainWindowViewModel model = (MainWindowViewModel)DataContext;
+            FSM model = (FSM)DataContext;
 
             SaveFileDialog dialog = new SaveFileDialog();
 
@@ -155,9 +154,9 @@ namespace eAIEditor
 
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            //var element = (FrameworkElement)sender;
-            //dragStart = null;
-            //element.ReleaseMouseCapture();
+            var element = (FrameworkElement)sender;
+            dragStart = null;
+            element.ReleaseMouseCapture();
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -166,14 +165,14 @@ namespace eAIEditor
             {
                 var p2 = e.GetPosition(graphArea);
 
-                //p2.X -= dragStart.Value.X;
-                //p2.Y -= dragStart.Value.Y;
+                p2.X -= dragStart.Value.X;
+                p2.Y -= dragStart.Value.Y;
 
-                //p2.X += Canvas.GetLeft(canvas);
-                //p2.Y += Canvas.GetTop(canvas);
+                p2.X += Canvas.GetLeft(canvas);
+                p2.Y += Canvas.GetTop(canvas);
 
-                //Canvas.SetLeft(canvas, p2.X);
-                //Canvas.SetTop(canvas, p2.Y);
+                Canvas.SetLeft(canvas, p2.X);
+                Canvas.SetTop(canvas, p2.Y);
             }
         }
 

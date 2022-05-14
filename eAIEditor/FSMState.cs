@@ -55,7 +55,10 @@ namespace eAIEditor
             writer.WriteAttributeString("name", Name);
 
             writer.WriteStartElement("variables");
-            foreach (var variable in Variables) variable.Write(writer);
+            foreach (var variable in Variables)
+            {
+                variable.Write(writer);
+            }
             writer.WriteEndElement();
 
             writer.WriteStartElement("editor_data");
@@ -70,13 +73,24 @@ namespace eAIEditor
             writer.WriteEndElement();
 
             writer.WriteStartElement("event_entry");
-            writer.WriteString(EventEntry);
+            if (!String.IsNullOrWhiteSpace(EventEntry))
+            {
+                writer.WriteString(EventEntry);
+            }
             writer.WriteEndElement();
+
             writer.WriteStartElement("event_exit");
-            writer.WriteString(EventExit);
+            if (!String.IsNullOrWhiteSpace(EventExit))
+            {
+                writer.WriteString(EventExit);
+            }
             writer.WriteEndElement();
+
             writer.WriteStartElement("event_update");
-            writer.WriteString(EventUpdate);
+            if (!String.IsNullOrWhiteSpace(EventUpdate))
+            {
+                writer.WriteString(EventUpdate);
+            }
             writer.WriteEndElement();
 
             writer.WriteEndElement();

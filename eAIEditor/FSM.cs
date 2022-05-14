@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace eAIEditor
 {
-    public class MainWindowViewModel
+    public class FSM
     {
         public ObservableCollection<FSMState> States { get; } = new ObservableCollection<FSMState>();
         public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
@@ -16,7 +16,7 @@ namespace eAIEditor
         public string FSMName;
         public string DefaultState;
 
-        public MainWindowViewModel()
+        public FSM()
         {
         }
 

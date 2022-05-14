@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Width="1280" Height="720">
 	<Window.DataContext>
-		<local:MainWindowViewModel/>
+		<local:FSM/>
 	</Window.DataContext>
 	<Window.Resources>
 		<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
