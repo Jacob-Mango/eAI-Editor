@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,7 +16,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -37,6 +37,13 @@ namespace eAIEditor
                 OnPropertyChanged();
             }
             get => _name;
+        }
+
+        private FSM _subFSM;
+        public FSM SubFSM
+        {
+            set { _subFSM = value; OnPropertyChanged(); }
+            get { return _subFSM; }
         }
 
         public double X
@@ -93,6 +100,13 @@ namespace eAIEditor
             get { return _eventExit; }
         }
 
+        private string _guardExit;
+        public string GuardExit
+        {
+            set { _guardExit = value; OnPropertyChanged(); }
+            get { return _guardExit; }
+        }
+
         private string _eventUpdate;
         public string EventUpdate
         {
@@ -100,7 +114,7 @@ namespace eAIEditor
             get { return _eventUpdate; }
         }
 
-        //public ObservableCollection<FSMVariable> Variables { get; } = new ObservableCollection<FSMVariable>();
+        public ObservableCollection<FSMVariable> Variables { get; } = new ObservableCollection<FSMVariable>();
         public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
 
         public FSMStateView View { get; protected set; }
@@ -115,10 +129,19 @@ namespace eAIEditor
         {
             Name = node.Attributes["name"].Value;
 
-            XmlElement variables = node["variables"];
-            foreach (XmlElement variable in variables)
+            var subFSMName = node.Attributes["fsm"];
+            if (subFSMName != null)
             {
-                //    Variables.Add(new FSMVariable(variable));
+                SubFSM = Root.Root.Get(subFSMName.Value);
+            }
+
+            XmlElement variables = node["variables"];
+            if (variables != null)
+            {
+                foreach (var variable in variables.OfType<XmlElement>())
+                {
+                    Variables.Add(new FSMVariable(variable));
+                }
             }
 
             var editor_data = node["editor_data"];
@@ -130,9 +153,7 @@ namespace eAIEditor
                 Height = double.Parse(editor_data["size"].GetAttribute("height"));
             }
 
-            Height = 40;
-            Width = 150;
-
+            GuardExit = node["guard_exit"] != null ? node["guard_exit"].InnerText : "";
             EventEntry = node["event_entry"] != null ? node["event_entry"].InnerText : "";
             EventExit = node["event_exit"] != null ? node["event_exit"].InnerText : "";
             EventUpdate = node["event_update"] != null ? node["event_update"].InnerText : "";
@@ -141,15 +162,21 @@ namespace eAIEditor
         public void Write(XmlWriter writer)
         {
             writer.WriteStartElement("state");
-            writer.WriteAttributeString("name", Name);
+            if (!String.IsNullOrWhiteSpace(Name))
+            {
+                writer.WriteAttributeString("name", Name);
+            }
 
+            if (SubFSM != null)
+            {
+                writer.WriteAttributeString("fsm", SubFSM.Name);
+            }
+            
             writer.WriteStartElement("variables");
-            /*
             foreach (var variable in Variables)
             {
                 variable.Write(writer);
             }
-            */
             writer.WriteEndElement();
 
             writer.WriteStartElement("editor_data");
@@ -161,6 +188,13 @@ namespace eAIEditor
             writer.WriteAttributeString("width", Width.ToString());
             writer.WriteAttributeString("height", Height.ToString());
             writer.WriteEndElement();
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("guard_exit");
+            if (!String.IsNullOrWhiteSpace(GuardExit))
+            {
+                writer.WriteString(GuardExit);
+            }
             writer.WriteEndElement();
 
             writer.WriteStartElement("event_entry");
@@ -185,6 +219,47 @@ namespace eAIEditor
             writer.WriteEndElement();
 
             writer.WriteEndElement();
+        }
+    }
+
+    public class FSMVariable : ViewModelBase
+    {
+        public FSMVariable(XmlElement element)
+        {
+            Name = element.GetAttribute("name");
+            Type = element.GetAttribute("type");
+            Default = element.GetAttribute("default");
+        }
+
+        public void Write(XmlWriter writer)
+        {
+            writer.WriteStartElement("variable");
+            writer.WriteAttributeString("name", Name);
+            writer.WriteAttributeString("type", Type);
+            if (Default != "") writer.WriteAttributeString("default", Default);
+            writer.WriteEndElement();
+        }
+
+        private string _Name;
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; OnPropertyChanged(); }
+        }
+
+        private string _Type;
+        public string Type
+        {
+            get { return _Type; }
+            set { _Type = value; OnPropertyChanged(); }
+        }
+
+        private string _Default;
+
+        public string Default
+        {
+            get { return _Default; }
+            set { _Default = value; OnPropertyChanged(); }
         }
     }
 

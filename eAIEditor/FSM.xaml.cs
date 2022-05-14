@@ -14,7 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -25,6 +25,7 @@ namespace eAIEditor
         public MainCanvasContext Root;
         public ObservableCollection<ViewModelBase> Items { get; }
 
+        public ObservableCollection<FSMVariable> Variables { get; } = new ObservableCollection<FSMVariable>();
         public ObservableCollection<FSMState> States { get; }
         public ObservableCollection<FSMTransition> Transitions { get; }
 
@@ -106,6 +107,11 @@ namespace eAIEditor
             return FileName == "";
         }
 
+        public void Save()
+        {
+            Save(FileName);
+        }
+
         public void Save(string file)
         {
             if (file != "" && file != FileName) FileName = file;
@@ -127,22 +133,8 @@ namespace eAIEditor
             }
         }
 
-        public void Clear()
-        {
-            States.Clear();
-            Transitions.Clear();
-        }
-
-        public void New()
-        {
-            Clear();
-            FileName = "";
-        }
-
         public void Load(string file)
         {
-            Clear();
-
             FileName = file;
 
             XmlDocument doc = new XmlDocument();
@@ -154,22 +146,51 @@ namespace eAIEditor
         public void Read(XmlElement node)
         {
             Name = node.GetAttribute("name");
-            XmlElement states = node["states"];
-            DefaultState = states.GetAttribute("default");
 
-            foreach (XmlElement stateNode in states.ChildNodes)
+            XmlElement files = node["files"];
+            if (files != null)
             {
-                FSMState state = new FSMState(this);
-                state.Read(stateNode);
-                AddState(state);
+                string path = Path.GetDirectoryName(FileName);
+
+                foreach (var file in files.OfType<XmlElement>())
+                {
+                    string fileName = file.GetAttribute("name");
+                    fileName = path + Path.DirectorySeparatorChar + fileName + ".xml";
+                    Root.LoadFSM(fileName);
+                }
+            }
+
+            XmlElement variables = node["variables"];
+            if (variables != null)
+            {
+                foreach (var variable in variables.OfType<XmlElement>())
+                {
+                    Variables.Add(new FSMVariable(variable));
+                }
+            }
+
+            XmlElement states = node["states"];
+            if (states != null)
+            {
+                DefaultState = states.GetAttribute("default");
+
+                foreach (var stateNode in states.OfType<XmlElement>())
+                {
+                    FSMState state = new FSMState(this);
+                    state.Read(stateNode);
+                    AddState(state);
+                }
             }
 
             XmlElement transitions = node["transitions"];
-            foreach (XmlElement transitionNode in transitions.ChildNodes)
+            if (transitions != null)
             {
-                FSMTransition transition = new FSMTransition(this);
-                transition.Read(transitionNode);
-                AddTransition(transition);
+                foreach (var transitionNode in transitions.OfType<XmlElement>())
+                {
+                    FSMTransition transition = new FSMTransition(this);
+                    transition.Read(transitionNode);
+                    AddTransition(transition);
+                }
             }
         }
 
@@ -180,6 +201,25 @@ namespace eAIEditor
             {
                 writer.WriteAttributeString("name", Name);
             }
+
+            writer.WriteStartElement("files");
+            foreach (FSMState state in States)
+            {
+                if (state.SubFSM != null)
+                {
+                    writer.WriteStartElement("file");
+                    writer.WriteAttributeString("name", state.SubFSM.Name);
+                    writer.WriteEndElement();
+                }
+            }
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("variables");
+            foreach (var variable in Variables)
+            {
+                variable.Write(writer);
+            }
+            writer.WriteEndElement();
 
             writer.WriteStartElement("states");
             if (!string.IsNullOrWhiteSpace(DefaultState))

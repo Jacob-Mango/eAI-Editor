@@ -26,6 +26,33 @@ namespace eAIEditor
     {
         public ObservableCollection<FSM> FSMs { get; }
 
+        private int _selectedFSMIndex;
+        public int SelectedFSMIndex
+        {
+            set
+            {
+                _selectedFSMIndex = value;
+                OnPropertyChanged();
+            }
+            get => _selectedFSMIndex;
+        }
+
+        public FSM FocusedFSM {
+            set
+            {
+                SelectedFSMIndex = FSMs.IndexOf(value);
+            }
+            get
+            {
+                if (SelectedFSMIndex < 0 || SelectedFSMIndex >= FSMs.Count())
+                {
+                    return null;
+                }
+
+                return FSMs[SelectedFSMIndex];
+            } 
+        }
+
         public ViewModelBase Selected;
         public bool Dragging;
 
@@ -34,13 +61,52 @@ namespace eAIEditor
             FSMs = new ObservableCollection<FSM>();
         }
 
+        public FSM Get(string name)
+        {
+            foreach (var fsm in FSMs)
+            {
+                if (fsm.Name.Equals(name))
+                {
+                    return fsm;
+                }
+            }
+
+            return null;
+        }
+
         public void LoadFSM(string filename)
         {
             FSM fsm = new FSM(this);
             fsm.Load(filename);
             FSMs.Add(fsm);
 
+            FocusedFSM = fsm;
+
             OnPropertyChanged("FSMs");
+        }
+
+        public void NewFSM(string filename)
+        {
+            FSM fsm = new FSM(this);
+            fsm.Save(filename);
+            FSMs.Add(fsm);
+
+            FocusedFSM = fsm;
+
+            OnPropertyChanged("FSMs");
+        }
+
+        public void SaveFSM()
+        {
+            FocusedFSM.Save();
+        }
+
+        public void SaveAll()
+        {
+            foreach (var fsm in FSMs)
+            {
+                fsm.Save();
+            }
         }
 
         // INotifyPropertyChanged implement
@@ -48,6 +114,21 @@ namespace eAIEditor
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    public static class AppCommands
+    {
+        private static RoutedUICommand saveAllCommand = new RoutedUICommand("SaveAll", "SaveAll", typeof(AppCommands));
+
+        public static RoutedCommand SaveAllCommand
+        {
+            get { return saveAllCommand; }
+        }
+
+        static AppCommands()
+        {
+            CommandBinding saveAllBinding = new CommandBinding(saveAllCommand);
+            CommandManager.RegisterClassCommandBinding(typeof(AppCommands), saveAllBinding);
+        }
+    }
 
     /// <summary>
     /// Interaction logic for MainCanvas.xaml
@@ -59,13 +140,23 @@ namespace eAIEditor
         public MainCanvas()
         {
             InitializeComponent();
+
             m_Context = DataContext as MainCanvasContext;
         }
 
         void New(object target, ExecutedRoutedEventArgs e)
         {
-            //FSM model = (FSM)DataContext;
-            //model.New();
+            SaveFileDialog dialog = new SaveFileDialog();
+
+            dialog.InitialDirectory = "P:\\eai\\Scripts\\FSM";
+            dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+            dialog.FilterIndex = 2;
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+                m_Context.NewFSM(dialog.FileName);
+            }
         }
 
         void CanNew(object sender, CanExecuteRoutedEventArgs e)
@@ -95,44 +186,20 @@ namespace eAIEditor
 
         void Save(object target, ExecutedRoutedEventArgs e)
         {
-            /*
-            FSM model = (FSM)DataContext;
-
-            if (model.NeedPath())
-            {
-                SaveAs(target, e);
-                return;
-            }
-
-            model.Save("");
-            */
+            m_Context.SaveFSM();
         }
 
         void CanSave(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = m_Context.FocusedFSM != null;
         }
 
-        void SaveAs(object target, ExecutedRoutedEventArgs e)
+        void SaveAll(object target, ExecutedRoutedEventArgs e)
         {
-            /*
-            FSM model = (FSM)DataContext;
-
-            SaveFileDialog dialog = new SaveFileDialog();
-
-            dialog.InitialDirectory = "P:\\eai\\Scripts\\FSM";
-            dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
-            dialog.FilterIndex = 2;
-            dialog.RestoreDirectory = true;
-
-            if (dialog.ShowDialog() == true)
-            {
-                model.Save(dialog.FileName);
-            }
-            */
+            m_Context.SaveAll();
         }
 
-        void CanSaveAs(object sender, CanExecuteRoutedEventArgs e)
+        void CanSaveAll(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }

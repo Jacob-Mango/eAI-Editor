@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:eAIEditor"
+        xmlns:commands="clr-namespace:eAIEditor"
         mc:Ignorable="d"
         Title="MainCanvas" Height="720" Width="1280">
-	
-    <Window.DataContext>
-        <local:MainCanvasContext/>
+
+	<Window.DataContext>
+		<local:MainCanvasContext/>
 	</Window.DataContext>
 
 	<Window.Resources>
@@ -16,29 +17,28 @@
 		<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
 		<local:FSMToTabConverter x:Key="FSMToTabConverter"/>
 		<ContextMenu x:Key="MainCtxMenu">
-        </ContextMenu>
-    </Window.Resources>
+		</ContextMenu>
+	</Window.Resources>
 
 	<Window.CommandBindings>
 		<CommandBinding Command="New" Executed="New" CanExecute="CanNew" />
 		<CommandBinding Command="Open" Executed="Open" CanExecute="CanOpen" />
 		<CommandBinding Command="Save" Executed="Save" CanExecute="CanSave" />
-		<CommandBinding Command="SaveAs" Executed="SaveAs" CanExecute="CanSaveAs" />
+		<CommandBinding Command="{x:Static commands:AppCommands.SaveAllCommand}" Executed="SaveAll" CanExecute="CanSaveAll" />
 	</Window.CommandBindings>
-	
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_New" Command="New"/>
+
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_File">
+				<MenuItem Header="_New" Command="New"/>
 				<MenuItem Header="_Open" Command="Open"/>
 				<MenuItem Header="_Save" Command="Save"/>
-				<MenuItem Header="_Save As" Command="SaveAs"/>
-                <MenuItem Header="_Close"/>
-                <Separator/>
-                <MenuItem Header="_Exit"/>
-            </MenuItem>
-        </Menu>
-		<TabControl ItemsSource="{Binding FSMs, Converter={StaticResource FSMToTabConverter}}">
+				<MenuItem Header="_Save All" Command="{x:Static commands:AppCommands.SaveAllCommand}"/>
+				<Separator/>
+				<MenuItem Header="_Exit"/>
+			</MenuItem>
+		</Menu>
+		<TabControl x:Name="tabs" ItemsSource="{Binding FSMs, Converter={StaticResource FSMToTabConverter}}" SelectedIndex="{Binding SelectedFSMIndex}">
 
 		</TabControl>
 	</DockPanel>
