@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,13 +18,30 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
 
 namespace eAIEditor
 {
     public class MainCanvasContext : INotifyPropertyChanged
     {
-        public ObservableCollection<FSMState> States { get; } = new ObservableCollection<FSMState>();
-        public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
+        public ObservableCollection<FSM> FSMs { get; }
+
+        public ViewModelBase Selected;
+        public bool Dragging;
+
+        public MainCanvasContext()
+        {
+            FSMs = new ObservableCollection<FSM>();
+        }
+
+        public void LoadFSM(string filename)
+        {
+            FSM fsm = new FSM(this);
+            fsm.Load(filename);
+            FSMs.Add(fsm);
+
+            OnPropertyChanged("FSMs");
+        }
 
         // INotifyPropertyChanged implement
         public event PropertyChangedEventHandler PropertyChanged;
@@ -35,94 +54,87 @@ namespace eAIEditor
     /// </summary>
     public partial class MainCanvas : Window
     {
-        protected ScaleTransform m_ScaleTransform;
-        protected MainCanvasContext m_MainCanvasContext;
-
-        public bool m_HandlingSomething;
+        protected MainCanvasContext m_Context;
 
         public MainCanvas()
         {
             InitializeComponent();
-            m_MainCanvasContext = DataContext as MainCanvasContext;
-
-            m_ScaleTransform = new ScaleTransform();
-            NodeCanvasView.RenderTransform = m_ScaleTransform;
+            m_Context = DataContext as MainCanvasContext;
         }
 
-        private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
+        void New(object target, ExecutedRoutedEventArgs e)
         {
-            e.Handled = true;
+            //FSM model = (FSM)DataContext;
+            //model.New();
+        }
 
-            double ScaleRate = 1.1;
+        void CanNew(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
 
-            if (e.Delta > 0) {
-                m_ScaleTransform.ScaleX *= ScaleRate;
-                m_ScaleTransform.ScaleY *= ScaleRate;
+        void Open(object target, ExecutedRoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.InitialDirectory = "P:\\DayZExpansion\\AI\\Scripts\\FSM";
+            dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+            dialog.FilterIndex = 2;
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+                m_Context.LoadFSM(dialog.FileName);
             }
-            else {
-                m_ScaleTransform.ScaleX /= ScaleRate;
-                m_ScaleTransform.ScaleY /= ScaleRate;
+        }
+
+        void CanOpen(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        void Save(object target, ExecutedRoutedEventArgs e)
+        {
+            /*
+            FSM model = (FSM)DataContext;
+
+            if (model.NeedPath())
+            {
+                SaveAs(target, e);
+                return;
             }
 
-            NodeCanvasView.Width = NodeCanvasView.ActualWidth / m_ScaleTransform.ScaleX;
-            NodeCanvasView.Height = NodeCanvasView.ActualHeight / m_ScaleTransform.ScaleY;
+            model.Save("");
+            */
         }
 
-        public void InsertNode(FSMState node)
+        void CanSave(object sender, CanExecuteRoutedEventArgs e)
         {
-            node.MainCanvas = this;
-
-            m_MainCanvasContext.States.Add(node);
-            NodeCanvasView.Children.Add(node.View);
+            e.CanExecute = true;
         }
 
-        public void RemoveNode(FSMState node)
+        void SaveAs(object target, ExecutedRoutedEventArgs e)
         {
-            m_MainCanvasContext.States.Remove(node);
-            NodeCanvasView.Children.Remove(node.View);
-        }
+            /*
+            FSM model = (FSM)DataContext;
 
-        public void AddTransition(FSMTransition transition)
-        {
-            transition.MainCanvas = this;
+            SaveFileDialog dialog = new SaveFileDialog();
 
-            m_MainCanvasContext.Transitions.Add(transition);
-            NodeCanvasView.Children.Add(transition.View);
-        }
+            dialog.InitialDirectory = "P:\\eai\\Scripts\\FSM";
+            dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+            dialog.FilterIndex = 2;
+            dialog.RestoreDirectory = true;
 
-        public void RemoveTransition(FSMTransition transition)
-        {
-            m_MainCanvasContext.Transitions.Remove(transition);
-            NodeCanvasView.Children.Remove(transition.View);
-        }
-
-        private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ContextMenu cm = FindResource("MainCtxMenu") as ContextMenu;
-            cm.IsOpen = true;
-        }
-
-        private void AddNode_Click(object sender, RoutedEventArgs e)
-        {
-            MenuItem item = sender as MenuItem;
-            FSMState node = new FSMState {
-                Name = "state",
-                Position = item.PointToScreen(new Point())
-            };
-
-            Debug.WriteLine(item.PointToScreen(new Point()));
-            InsertNode(node);
-
-            // testing
-            if (m_MainCanvasContext.States.Count() == 2) {
-                Debug.WriteLine("Hi");
-                FSMTransition transition = new FSMTransition() {
-                    Source = m_MainCanvasContext.States[0],
-                    Destination = m_MainCanvasContext.States[1]
-                };
-
-                AddTransition(transition);
+            if (dialog.ShowDialog() == true)
+            {
+                model.Save(dialog.FileName);
             }
+            */
+        }
+
+        void CanSaveAs(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
         }
     }
 }

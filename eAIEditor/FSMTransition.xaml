@@ -14,11 +14,11 @@
 		</Canvas.Resources>
 		
 		<Line X1="{Binding SrcX}" Y1="{Binding SrcY}" X2="{Binding DstX}" Y2="{Binding DstY}" Stroke="Black" StrokeThickness="2"/>
-		<Ellipse Visibility="{Binding DraggingSource, Converter={StaticResource InvertBooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Black" StrokeThickness="1" Canvas.Left="{Binding SrcX}" Canvas.Top="{Binding SrcY}" Margin="-6,-6,0,0" MouseDown="TransitionSource_MouseDown" MouseUp="TransitionSource_MouseUp" MouseMove="TransitionSource_MouseMove" />
-		<Ellipse Visibility="{Binding DraggingDestination, Converter={StaticResource InvertBooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Black" StrokeThickness="1" Canvas.Left="{Binding DstX}" Canvas.Top="{Binding DstY}" Margin="-6,-6,0,0" MouseDown="TransitionDestination_MouseDown" MouseUp="TransitionDestination_MouseUp" MouseMove="TransitionDestination_MouseMove" />
+		<Ellipse Visibility="{Binding DraggingSource, Converter={StaticResource InvertBooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Black" StrokeThickness="1" Canvas.Left="{Binding SrcX}" Canvas.Top="{Binding SrcY}" Margin="-6,-6,0,0" MouseDown="Source_MouseDown" MouseUp="Source_MouseUp" />
+		<Ellipse Visibility="{Binding DraggingDestination, Converter={StaticResource InvertBooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Black" StrokeThickness="1" Canvas.Left="{Binding DstX}" Canvas.Top="{Binding DstY}" Margin="-6,-6,0,0" MouseDown="Destination_MouseDown" MouseUp="Destination_MouseUp" />
 
-		<Ellipse Visibility="{Binding DraggingSource, Converter={StaticResource BooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Red" StrokeThickness="1" Canvas.Left="{Binding SrcX}" Canvas.Top="{Binding SrcY}" Margin="-6,-6,0,0" MouseDown="TransitionSource_MouseDown" MouseUp="TransitionSource_MouseUp" MouseMove="TransitionSource_MouseMove" />
-		<Ellipse Visibility="{Binding DraggingDestination, Converter={StaticResource BooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Red" StrokeThickness="1" Canvas.Left="{Binding DstX}" Canvas.Top="{Binding DstY}" Margin="-6,-6,0,0" MouseDown="TransitionDestination_MouseDown" MouseUp="TransitionDestination_MouseUp" MouseMove="TransitionDestination_MouseMove" />
+		<Ellipse Visibility="{Binding DraggingSource, Converter={StaticResource BooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Red" StrokeThickness="1" Canvas.Left="{Binding SrcX}" Canvas.Top="{Binding SrcY}" Margin="-6,-6,0,0" MouseDown="Source_MouseDown" MouseUp="Source_MouseUp" />
+		<Ellipse Visibility="{Binding DraggingDestination, Converter={StaticResource BooleanVisiblityConverter}}" Width="12" Height="12" Fill="Black" Stroke="Red" StrokeThickness="1" Canvas.Left="{Binding DstX}" Canvas.Top="{Binding DstY}" Margin="-6,-6,0,0" MouseDown="Destination_MouseDown" MouseUp="Destination_MouseUp" />
 	</Canvas>
 
 </UserControl>

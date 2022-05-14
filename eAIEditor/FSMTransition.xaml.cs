@@ -15,14 +15,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace eAIEditor
 {
-    [Serializable]
-    public class FSMTransition : INotifyPropertyChanged
+    public class FSMTransition : ViewModelBase
     {
-        [NonSerialized]
-        public MainCanvas MainCanvas; //! temp hack fix, pls no kill
+        public FSM Root;
 
         private FSMState _source;
         public FSMState Source
@@ -50,6 +50,20 @@ namespace eAIEditor
 
                 OnPropertyChanged();
             }
+        }
+
+        private string _Event;
+        public string Event
+        {
+            get { return _Event; }
+            set { _Event = value; OnPropertyChanged(); }
+        }
+
+        private string _Guard;
+        public string Guard
+        {
+            get { return _Guard; }
+            set { _Guard = value; OnPropertyChanged(); }
         }
 
         private bool _DraggingSource;
@@ -88,7 +102,6 @@ namespace eAIEditor
         }
 
         private double _Src_AbsY;
-
         public double SrcY
         {
             get { return _Src_AbsY; }
@@ -117,7 +130,6 @@ namespace eAIEditor
         }
 
         private double _Dst_AbsY;
-
         public double DstY
         {
             get { return _Dst_AbsY; }
@@ -209,14 +221,86 @@ namespace eAIEditor
 
         public FSMTransitionView View { get; protected set; }
 
-        public FSMTransition()
+        public FSMTransition(FSM root)
         {
+            Root = root;
             View = new FSMTransitionView(this);
         }
 
-        // INotifyPropertyChanged implement
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public void Read(XmlElement node)
+        {
+            string src = node["from_state"] != null ? node["from_state"].GetAttribute("name") : "";
+            string dst = node["to_state"] != null ? node["to_state"].GetAttribute("name") : "";
+            Event = node["event"] != null ? node["event"].GetAttribute("name") : "";
+
+            foreach (FSMState state in Root.States)
+            {
+                if (state.Name == src) Source = state;
+                if (state.Name == dst) Destination = state;
+            }
+
+            var editor_data = node["editor_data"];
+            if (editor_data != null)
+            {
+                _Src_RelX = double.Parse(editor_data["position_source"].GetAttribute("x"));
+                _Src_RelY = double.Parse(editor_data["position_source"].GetAttribute("y"));
+                _Dst_RelX = double.Parse(editor_data["position_destination"].GetAttribute("x"));
+                _Dst_RelY = double.Parse(editor_data["position_destination"].GetAttribute("y"));
+            }
+
+            Guard = node["guard"] != null ? node["guard"].InnerText : "";
+
+            StateChanged();
+        }
+
+        public void Write(XmlWriter writer)
+        {
+            writer.WriteStartElement("transition");
+
+            writer.WriteStartElement("editor_data");
+
+            writer.WriteStartElement("position_source");
+            writer.WriteAttributeString("x", _Src_RelX.ToString());
+            writer.WriteAttributeString("y", _Src_RelY.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("position_destination");
+            writer.WriteAttributeString("x", _Dst_RelX.ToString());
+            writer.WriteAttributeString("y", _Dst_RelY.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("guard");
+            if (!string.IsNullOrWhiteSpace(Guard))
+            {
+                writer.WriteString(Guard);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("event");
+            if (!string.IsNullOrWhiteSpace(Event))
+            {
+                writer.WriteAttributeString("name", Event);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("from_state");
+            if (Source != null)
+            {
+                writer.WriteAttributeString("name", Source.Name);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("to_state");
+            if (Destination != null)
+            {
+                writer.WriteAttributeString("name", Destination.Name);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();
+        }
     }
 
     public partial class FSMTransitionView : UserControl
@@ -226,180 +310,205 @@ namespace eAIEditor
 
         protected Point m_DragPoint;
 
-        protected bool m_HandlingSrc;
-        protected bool m_HandlingDst;
-
         public FSMTransitionView(FSMTransition node)
         {
             InitializeComponent();
             DataContext = m_Transition = node;
         }
-        
-        // INotifyPropertyChanged implement
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private void TransitionSource_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Source_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && !m_Transition.MainCanvas.m_HandlingSomething)
+            if (m_Transition.Root.Root.Dragging)
             {
-                m_DragPoint = e.GetPosition(sender as FrameworkElement);
-                m_DragPoint.X -= 6;
-                m_DragPoint.Y -= 6;
-
-                m_Transition.DraggingSource = true;
-                m_Transition.DraggingDestination = false;
-
-                m_HandlingSrc = m_Transition.MainCanvas.m_HandlingSomething = true;
+                return;
             }
+
+            if (e.ChangedButton != MouseButton.Left)
+            {
+                return;
+            }
+            
+            m_DragPoint = e.GetPosition(sender as FrameworkElement);
+            m_DragPoint.X -= 6;
+            m_DragPoint.Y -= 6;
+
+            m_Transition.DraggingSource = true;
+            m_Transition.DraggingDestination = false;
+
+            m_Transition.Root.Root.Selected = m_Transition;
+            m_Transition.Root.Root.Dragging = true;
         }
 
-        private void TransitionSource_MouseUp(object sender, MouseButtonEventArgs e)
+        private void Source_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && m_HandlingSrc)
+            if (e.ChangedButton != MouseButton.Left)
             {
-                m_Transition.DraggingSource = false;
-                m_Transition.StateChanged();
-
-                m_HandlingSrc = m_Transition.MainCanvas.m_HandlingSomething = false;
+                return;
             }
+
+            m_Transition.DraggingSource = false;
+            m_Transition.StateChanged();
+
+            m_Transition.Root.Root.Dragging = false;
         }
 
-        private void TransitionSource_MouseMove(object sender, MouseEventArgs e)
+        private void Source_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && m_HandlingSrc)
+            if (!m_Transition.DraggingSource)
             {
-                Point position = e.GetPosition(Parent as FrameworkElement);
-
-                var state = m_Transition.Source;
-                if (state != null)
-                {
-                    if (state == m_Transition.Destination) m_Transition.Source = null;
-                    else if (position.X + 50 < state.X) m_Transition.Source = null;
-                    else if (position.Y + 50 < state.Y) m_Transition.Source = null;
-                    else if (position.X + state.Width - 50 > state.X) m_Transition.Source = null;
-                    else if (position.Y + state.Height - 50 > state.Y) m_Transition.Source = null;
-                }
-
-                VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
-
-                m_Transition.Source = m_HoveringState;
-
-                if (m_Transition.Source == null)
-                {
-                    m_Transition.SrcX = position.X - m_DragPoint.X;
-                    m_Transition.SrcY = position.Y - m_DragPoint.Y;
-                    return;
-                }
-
-                Point p2 = e.GetPosition(sender as FrameworkElement);
-                Point p3 = e.GetPosition(m_HoveringState.View);
-
-                if (p3.X < 1.0 * m_HoveringState.Width / 4.0)
-                {
-                    m_Transition.RelSrcX = 0;
-                    m_Transition.RelSrcY = p3.Y / m_HoveringState.Width;
-                } else if (p3.X > 3.0 * m_HoveringState.Width / 4.0)
-                {
-                    m_Transition.RelSrcX = 1;
-                    m_Transition.RelSrcY = p3.Y / m_HoveringState.Width;
-                }
-
-                if (p3.X < 1.0 * m_HoveringState.Height / 4.0)
-                {
-                    m_Transition.RelSrcX = p3.X / m_HoveringState.Height;
-                    m_Transition.RelSrcY = 0;
-                }
-                else if (p3.X > 3.0 * m_HoveringState.Height / 4.0)
-                {
-                    m_Transition.RelSrcX = p3.X / m_HoveringState.Height;
-                    m_Transition.RelSrcY = 1;
-                }
-
-                m_Transition.UpdateAbsoluteSource();
+                return;
             }
+
+            Point position = e.GetPosition(Parent as FrameworkElement);
+
+            var state = m_Transition.Source;
+            if (state != null)
+            {
+                if (state == m_Transition.Destination) m_Transition.Source = null;
+                else if (position.X + 50 < state.X) m_Transition.Source = null;
+                else if (position.Y + 50 < state.Y) m_Transition.Source = null;
+                else if (position.X + state.Width - 50 > state.X) m_Transition.Source = null;
+                else if (position.Y + state.Height - 50 > state.Y) m_Transition.Source = null;
+            }
+
+            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
+
+            m_Transition.Source = m_HoveringState;
+
+            if (m_Transition.Source == null)
+            {
+                m_Transition.SrcX = position.X - m_DragPoint.X;
+                m_Transition.SrcY = position.Y - m_DragPoint.Y;
+                return;
+            }
+
+            Point p2 = e.GetPosition(sender as FrameworkElement);
+            Point p3 = e.GetPosition(m_HoveringState.View);
+
+            if (p3.X < 1.0 * m_HoveringState.Width / 4.0)
+            {
+                m_Transition.RelSrcX = 0;
+                m_Transition.RelSrcY = p3.Y / m_HoveringState.Width;
+            }
+            else if (p3.X > 3.0 * m_HoveringState.Width / 4.0)
+            {
+                m_Transition.RelSrcX = 1;
+                m_Transition.RelSrcY = p3.Y / m_HoveringState.Width;
+            }
+
+            if (p3.X < 1.0 * m_HoveringState.Height / 4.0)
+            {
+                m_Transition.RelSrcX = p3.X / m_HoveringState.Height;
+                m_Transition.RelSrcY = 0;
+            }
+            else if (p3.X > 3.0 * m_HoveringState.Height / 4.0)
+            {
+                m_Transition.RelSrcX = p3.X / m_HoveringState.Height;
+                m_Transition.RelSrcY = 1;
+            }
+
+            m_Transition.UpdateAbsoluteSource();
         }
 
-        private void TransitionDestination_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Destination_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && !m_Transition.MainCanvas.m_HandlingSomething)
+            if (m_Transition.Root.Root.Dragging)
             {
-                m_DragPoint = e.GetPosition(sender as FrameworkElement);
-                m_DragPoint.X -= 6;
-                m_DragPoint.Y -= 6;
-
-                m_Transition.DraggingDestination = true;
-                m_Transition.DraggingSource = false;
-
-                m_HandlingDst = m_Transition.MainCanvas.m_HandlingSomething = true;
+                return;
             }
+
+            if (e.ChangedButton != MouseButton.Left)
+            {
+                return;
+            }
+
+            m_DragPoint = e.GetPosition(sender as FrameworkElement);
+            m_DragPoint.X -= 6;
+            m_DragPoint.Y -= 6;
+
+            m_Transition.DraggingDestination = true;
+            m_Transition.DraggingSource = false;
+
+            m_Transition.Root.Root.Selected = m_Transition;
+            m_Transition.Root.Root.Dragging = true;
         }
 
-        private void TransitionDestination_MouseUp(object sender, MouseButtonEventArgs e)
+        private void Destination_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && m_HandlingDst)
+            if (e.ChangedButton != MouseButton.Left)
             {
-                m_Transition.DraggingDestination = false;
-                m_Transition.StateChanged();
-
-                m_HandlingDst = m_Transition.MainCanvas.m_HandlingSomething = false;
+                return;
             }
+
+            m_Transition.DraggingDestination = false;
+            m_Transition.StateChanged();
+
+            m_Transition.Root.Root.Dragging = false;
         }
 
-        private void TransitionDestination_MouseMove(object sender, MouseEventArgs e)
+        private void Destination_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && m_HandlingDst)
+            if (!m_Transition.DraggingDestination)
             {
-                Point position = e.GetPosition(Parent as FrameworkElement);
-
-                var state = m_Transition.Destination;
-
-                if (state != null) {
-                    if (state == m_Transition.Source) m_Transition.Destination = null;
-                    else if (position.X + 50 < state.X) m_Transition.Destination = null;
-                    else if (position.Y + 50 < state.Y) m_Transition.Destination = null;
-                    else if (position.X + state.Width - 50 > state.X) m_Transition.Destination = null;
-                    else if (position.Y + state.Height - 50 > state.Y) m_Transition.Destination = null;
-                }
-
-                VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
-
-                m_Transition.Destination = m_HoveringState;
-
-                if (m_Transition.Destination == null)
-                {
-                    m_Transition.DstX = position.X - m_DragPoint.X;
-                    m_Transition.DstY = position.Y - m_DragPoint.Y;
-                    return;
-                }
-
-                Point p2 = e.GetPosition(sender as FrameworkElement);
-                Point p3 = e.GetPosition(m_HoveringState.View);
-
-                if (p3.X < 1.0 * m_HoveringState.Width / 4.0)
-                {
-                    m_Transition.RelDstX = 0;
-                    m_Transition.RelDstY = p3.Y / m_HoveringState.Width;
-                }
-                else if (p3.X > 3.0 * m_HoveringState.Width / 4.0)
-                {
-                    m_Transition.RelDstX = 1;
-                    m_Transition.RelDstY = p3.Y / m_HoveringState.Width;
-                }
-
-                if (p3.X < 1.0 * m_HoveringState.Height / 4.0)
-                {
-                    m_Transition.RelDstX = p3.X / m_HoveringState.Height;
-                    m_Transition.RelDstY = 0;
-                }
-                else if (p3.X > 3.0 * m_HoveringState.Height / 4.0)
-                {
-                    m_Transition.RelDstX = p3.X / m_HoveringState.Height;
-                    m_Transition.RelDstY = 1;
-                }
-
-                m_Transition.UpdateAbsoluteDestination();
+                return;
             }
+
+            Point position = e.GetPosition(Parent as FrameworkElement);
+
+            var state = m_Transition.Destination;
+
+            if (state != null)
+            {
+                if (state == m_Transition.Source) m_Transition.Destination = null;
+                else if (position.X + 50 < state.X) m_Transition.Destination = null;
+                else if (position.Y + 50 < state.Y) m_Transition.Destination = null;
+                else if (position.X + state.Width - 50 > state.X) m_Transition.Destination = null;
+                else if (position.Y + state.Height - 50 > state.Y) m_Transition.Destination = null;
+            }
+
+            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
+
+            m_Transition.Destination = m_HoveringState;
+
+            if (m_Transition.Destination == null)
+            {
+                m_Transition.DstX = position.X - m_DragPoint.X;
+                m_Transition.DstY = position.Y - m_DragPoint.Y;
+                return;
+            }
+
+            Point p2 = e.GetPosition(sender as FrameworkElement);
+            Point p3 = e.GetPosition(m_HoveringState.View);
+
+            if (p3.X < 1.0 * m_HoveringState.Width / 4.0)
+            {
+                m_Transition.RelDstX = 0;
+                m_Transition.RelDstY = p3.Y / m_HoveringState.Width;
+            }
+            else if (p3.X > 3.0 * m_HoveringState.Width / 4.0)
+            {
+                m_Transition.RelDstX = 1;
+                m_Transition.RelDstY = p3.Y / m_HoveringState.Width;
+            }
+
+            if (p3.X < 1.0 * m_HoveringState.Height / 4.0)
+            {
+                m_Transition.RelDstX = p3.X / m_HoveringState.Height;
+                m_Transition.RelDstY = 0;
+            }
+            else if (p3.X > 3.0 * m_HoveringState.Height / 4.0)
+            {
+                m_Transition.RelDstX = p3.X / m_HoveringState.Height;
+                m_Transition.RelDstY = 1;
+            }
+
+            m_Transition.UpdateAbsoluteDestination();
+        }
+
+        public void MouseMove(object sender, MouseEventArgs e)
+        {
+            Source_MouseMove(sender, e);
+            Destination_MouseMove(sender, e);
         }
 
         public HitTestResultBehavior StateResult(HitTestResult result)

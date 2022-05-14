@@ -1,4 +1,4 @@
-﻿<Window x:Class="eAIEditor.MainCanvas"
+<Window x:Class="eAIEditor.MainCanvas"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,44 +14,32 @@
 	<Window.Resources>
 		<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
 		<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
+		<local:FSMToTabConverter x:Key="FSMToTabConverter"/>
 		<ContextMenu x:Key="MainCtxMenu">
-            <MenuItem Header="Add Node" Click="AddNode_Click"/>
         </ContextMenu>
     </Window.Resources>
+
+	<Window.CommandBindings>
+		<CommandBinding Command="New" Executed="New" CanExecute="CanNew" />
+		<CommandBinding Command="Open" Executed="Open" CanExecute="CanOpen" />
+		<CommandBinding Command="Save" Executed="Save" CanExecute="CanSave" />
+		<CommandBinding Command="SaveAs" Executed="SaveAs" CanExecute="CanSaveAs" />
+	</Window.CommandBindings>
 	
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_New"/>
-                <MenuItem Header="_Open"/>
-                <MenuItem Header="_Save"/>
-                <MenuItem Header="_Save As"/>
+                <MenuItem Header="_New" Command="New"/>
+				<MenuItem Header="_Open" Command="Open"/>
+				<MenuItem Header="_Save" Command="Save"/>
+				<MenuItem Header="_Save As" Command="SaveAs"/>
                 <MenuItem Header="_Close"/>
                 <Separator/>
                 <MenuItem Header="_Exit"/>
             </MenuItem>
         </Menu>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="5*"/>
-            </Grid.ColumnDefinitions>
+		<TabControl ItemsSource="{Binding FSMs, Converter={StaticResource FSMToTabConverter}}">
 
-			<ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Visible">
-				<Canvas x:Name="NodeCanvasView" MouseRightButtonDown="Canvas_MouseRightButtonDown" MouseWheel="ScrollViewer_MouseWheel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="50000" MinHeight="50000">
-				    <Canvas.Background>
-					    <SolidColorBrush Color="White" Opacity="0"/>
-				    </Canvas.Background>
-				</Canvas>
-			</ScrollViewer>
-
-			<TreeView Grid.Column="0" x:Name="NodeTreeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Path=Nodes}">
-                <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type local:FSMState}">
-                        <TreeViewItem Header="{Binding Path=Name}"/>
-                    </HierarchicalDataTemplate>
-                </TreeView.Resources>
-            </TreeView>
-        </Grid>
-    </DockPanel>
+		</TabControl>
+	</DockPanel>
 </Window>

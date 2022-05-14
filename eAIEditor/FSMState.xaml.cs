@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -15,20 +16,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace eAIEditor
 {
-    // Serialized node
-    [Serializable]
-    public class FSMState : INotifyPropertyChanged
+    public class FSMState : ViewModelBase
     {
-        [NonSerialized]
-        public MainCanvas MainCanvas; //! temp hack fix, pls no kill
+        public FSM Root;
 
-        [NonSerialized]
         public Point Position;
+        public Point Size;
 
-        [NonSerialized]
         private string _name;
         public string Name
         {
@@ -40,45 +39,46 @@ namespace eAIEditor
             get => _name;
         }
 
-        public float X
+        public double X
         {
             set
             {
                 Position.X = value;
                 OnPropertyChanged();
             }
-            get => (float)Position.X;
+            get => Position.X;
         }
 
-        public float Y
+        public double Y
         {
             set
             {
                 Position.Y = value;
                 OnPropertyChanged();
             }
-            get => (float)Position.Y;
+            get => Position.Y;
         }
 
-        public float Width
+        public double Width
         {
             set
             {
-            }
-            get => (float)150;
-        }
-
-        public float Height
-        {
-            set
-            {
-                Position.Y = value;
+                Size.X = value;
                 OnPropertyChanged();
             }
-            get => (float)40;
+            get => Size.X;
         }
 
-        [NonSerialized]
+        public double Height
+        {
+            set
+            {
+                Size.Y = value;
+                OnPropertyChanged();
+            }
+            get => Size.Y;
+        }
+
         private string _eventEntry;
         public string EventEntry
         {
@@ -86,7 +86,6 @@ namespace eAIEditor
             get { return _eventEntry; }
         }
 
-        [NonSerialized]
         private string _eventExit;
         public string EventExit
         {
@@ -94,7 +93,6 @@ namespace eAIEditor
             get { return _eventExit; }
         }
 
-        [NonSerialized]
         private string _eventUpdate;
         public string EventUpdate
         {
@@ -102,18 +100,92 @@ namespace eAIEditor
             get { return _eventUpdate; }
         }
 
-        public List<FSMTransition> Transitions = new List<FSMTransition>();
+        //public ObservableCollection<FSMVariable> Variables { get; } = new ObservableCollection<FSMVariable>();
+        public ObservableCollection<FSMTransition> Transitions { get; } = new ObservableCollection<FSMTransition>();
 
         public FSMStateView View { get; protected set; }
 
-        public FSMState()
+        public FSMState(FSM root)
         {
+            Root = root;
             View = new FSMStateView(this);
         }
 
-        // INotifyPropertyChanged implement
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public void Read(XmlElement node)
+        {
+            Name = node.Attributes["name"].Value;
+
+            XmlElement variables = node["variables"];
+            foreach (XmlElement variable in variables)
+            {
+                //    Variables.Add(new FSMVariable(variable));
+            }
+
+            var editor_data = node["editor_data"];
+            if (editor_data != null)
+            {
+                X = double.Parse(editor_data["position"].GetAttribute("x"));
+                Y = double.Parse(editor_data["position"].GetAttribute("y"));
+                Width = double.Parse(editor_data["size"].GetAttribute("width"));
+                Height = double.Parse(editor_data["size"].GetAttribute("height"));
+            }
+
+            Height = 40;
+            Width = 150;
+
+            EventEntry = node["event_entry"] != null ? node["event_entry"].InnerText : "";
+            EventExit = node["event_exit"] != null ? node["event_exit"].InnerText : "";
+            EventUpdate = node["event_update"] != null ? node["event_update"].InnerText : "";
+        }
+
+        public void Write(XmlWriter writer)
+        {
+            writer.WriteStartElement("state");
+            writer.WriteAttributeString("name", Name);
+
+            writer.WriteStartElement("variables");
+            /*
+            foreach (var variable in Variables)
+            {
+                variable.Write(writer);
+            }
+            */
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("editor_data");
+            writer.WriteStartElement("position");
+            writer.WriteAttributeString("x", X.ToString());
+            writer.WriteAttributeString("y", Y.ToString());
+            writer.WriteEndElement();
+            writer.WriteStartElement("size");
+            writer.WriteAttributeString("width", Width.ToString());
+            writer.WriteAttributeString("height", Height.ToString());
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("event_entry");
+            if (!String.IsNullOrWhiteSpace(EventEntry))
+            {
+                writer.WriteString(EventEntry);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("event_exit");
+            if (!String.IsNullOrWhiteSpace(EventExit))
+            {
+                writer.WriteString(EventExit);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("event_update");
+            if (!String.IsNullOrWhiteSpace(EventUpdate))
+            {
+                writer.WriteString(EventUpdate);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();
+        }
     }
 
     public partial class FSMStateView : UserControl
@@ -125,76 +197,70 @@ namespace eAIEditor
         protected FSMState m_State;
 
         protected Point m_DragPoint;
-        protected bool m_Handling;
 
         public FSMStateView(FSMState node)
         {
             InitializeComponent();
             DataContext = m_State = node;
-
-            GiveFeedback += FSMNodeView_GiveFeedback;
         }
 
-        // INotifyPropertyChanged implement
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        private void MouseEnter(object sender, MouseEventArgs e)
         {
             HighlightBorder.BorderBrush = BRUSH_HIGHLIGHT;
         }
 
-        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        private void MouseLeave(object sender, MouseEventArgs e)
         {
             HighlightBorder.BorderBrush = BRUSH_DEFAULT;
         }
 
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void MouseDown(object sender, MouseButtonEventArgs e)
         {
-            base.OnMouseDown(e);
-
-            if (e.ChangedButton == MouseButton.Left && !m_State.MainCanvas.m_HandlingSomething)
+            if (m_State.Root.Root.Dragging)
             {
-                m_DragPoint = e.GetPosition(this);
-                m_Handling = m_State.MainCanvas.m_HandlingSomething = true;
+                return;
             }
+
+            if (e.ChangedButton != MouseButton.Left)
+            {
+                return;
+            }
+
+            m_DragPoint = e.GetPosition(this);
+
+            m_State.Root.Root.Selected = m_State;
+            m_State.Root.Root.Dragging = true;
         }
 
-        private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
+        private void MouseUp(object sender, MouseButtonEventArgs e)
         {
-            base.OnMouseDown(e);
-
-            if (e.ChangedButton == MouseButton.Left && m_Handling)
+            if (e.ChangedButton != MouseButton.Left)
             {
-                m_Handling = m_State.MainCanvas.m_HandlingSomething = false;
+                return;
             }
+
+            m_State.Root.Root.Dragging = false;
         }
 
-        private void Grid_MouseMove(object sender, MouseEventArgs e)
+        public void MouseMove(object sender, MouseEventArgs e)
         {
-            base.OnMouseMove(e);
-
-            if (e.LeftButton == MouseButtonState.Pressed && m_Handling)
+            if (e.LeftButton != MouseButtonState.Pressed)
             {
-                Point position = e.GetPosition(Parent as FrameworkElement);
-
-                m_State.Position.X = position.X - m_DragPoint.X;
-                m_State.Position.Y = position.Y - m_DragPoint.Y;
-
-                Canvas.SetLeft(this, m_State.Position.X);
-                Canvas.SetTop(this, m_State.Position.Y);
-
-                foreach (FSMTransition transition in m_State.Transitions)
-                {
-                    transition.UpdateAbsoluteSource();
-                    transition.UpdateAbsoluteDestination();
-                }
+                return;
             }
-        }
 
-        private void FSMNodeView_GiveFeedback(object sender, GiveFeedbackEventArgs e)
-        {
-            Debug.WriteLine(e.Effects);
+            Point position = e.GetPosition(Parent as FrameworkElement);
+
+            m_State.X = position.X - m_DragPoint.X;
+            m_State.Y = position.Y - m_DragPoint.Y;
+
+            //Canvas.SetLeft(this, m_State.X);
+            //Canvas.SetTop(this, m_State.Y);
+
+            foreach (FSMTransition transition in m_State.Transitions)
+            {
+                transition.StateChanged();
+            }
         }
     }
 }

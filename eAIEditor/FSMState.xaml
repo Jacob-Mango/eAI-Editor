@@ -6,12 +6,21 @@
              xmlns:local="clr-namespace:eAIEditor"
              mc:Ignorable="d" 
              Height="40"
-             Width="150">
+             Width="150" RenderTransformOrigin="0.5,0.5">
+	<UserControl.RenderTransform>
+		<TransformGroup>
+			<ScaleTransform/>
+			<SkewTransform/>
+			<RotateTransform/>
+			<TranslateTransform X="{Binding X}"/>
+			<TranslateTransform Y="{Binding Y}"/>
+		</TransformGroup>
+	</UserControl.RenderTransform>
 
-    <Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Stretch">
-		<Grid Background="Coral" MouseMove="Grid_MouseMove" MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+	<Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Stretch">
+		<Grid Background="Coral" MouseDown="MouseDown" MouseUp="MouseUp" MouseEnter="MouseEnter" MouseLeave="MouseLeave" MouseMove="MouseMove">
 			<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        </Grid>
-    </Border>
+		</Grid>
+	</Border>
 
 </UserControl>
