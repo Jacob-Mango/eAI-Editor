@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,9 +20,55 @@ using System.Windows.Shapes;
 
 namespace eAIEditor
 {
-    /// <summary>
-    /// Interaction logic for Properties.xaml
-    /// </summary>
+    public class TypeMatchesConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values[1] == null)
+            {
+                return Visibility.Hidden;
+            }
+
+            if (values[0] != values[1])
+            {
+                return Visibility.Hidden;
+            }
+
+            return Visibility.Visible;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class FSMStateConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var states = value as ObservableCollection<FSMState>;
+
+            if (states != null)
+            {
+                List<string> strings = new List<string>();
+                foreach (var state in states)
+                {
+                    strings.Add(state.Name);
+                }
+
+                return strings;
+            }
+
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class PropertiesView : UserControl
     {
         public List<string> Keywords_0 = new List<string> {
@@ -106,9 +154,11 @@ namespace eAIEditor
             }
 
             InitScintilla(Control_Transition_Guard);
+
             InitScintilla(Control_State_EventEntry);
             InitScintilla(Control_State_EventExit);
             InitScintilla(Control_State_EventUpdate);
+            InitScintilla(Control_State_GuardExit);
         }
 
         System.Drawing.Color IntToColor(int value)

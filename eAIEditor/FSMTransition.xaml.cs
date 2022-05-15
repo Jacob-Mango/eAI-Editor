@@ -187,7 +187,7 @@ namespace eAIEditor
                 DstY = double.Parse(editor_data["position_destination"].GetAttribute("y"));
             }
 
-            Guard = node["guard"] != null ? node["guard"].InnerText : "";
+            Guard = Root.ReadCodeElement(node["guard"]);
 
             StateChanged();
         }
@@ -210,12 +210,7 @@ namespace eAIEditor
 
             writer.WriteEndElement();
 
-            writer.WriteStartElement("guard");
-            if (!string.IsNullOrWhiteSpace(Guard))
-            {
-                writer.WriteString(Guard);
-            }
-            writer.WriteEndElement();
+            Root.WriteCodeElement(writer, "guard", Guard);
 
             writer.WriteStartElement("event");
             if (!string.IsNullOrWhiteSpace(Event))

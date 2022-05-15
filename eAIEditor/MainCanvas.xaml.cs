@@ -66,9 +66,6 @@ namespace eAIEditor
             set
             {
                 _selected = value;
-                State = _selected as FSMState;
-                Transition = _selected as FSMTransition;
-
 
                 OnPropertyChanged();
                 OnPropertyChanged("State");
@@ -78,8 +75,21 @@ namespace eAIEditor
 
         public bool Dragging;
 
-        public FSMState State { get; private set; }
-        public FSMTransition Transition { get; private set; }
+        public FSMState State
+        {
+            get
+            {
+                return _selected as FSMState;
+            }
+        }
+
+        public FSMTransition Transition
+        {
+            get
+            {
+                return _selected as FSMTransition;
+            }
+        }
 
         public MainCanvasContext()
         {

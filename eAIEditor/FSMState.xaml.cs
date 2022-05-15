@@ -195,10 +195,10 @@ namespace eAIEditor
                 Height = double.Parse(editor_data["size"].GetAttribute("height"));
             }
 
-            GuardExit = node["guard_exit"] != null ? node["guard_exit"].InnerText : "";
-            EventEntry = node["event_entry"] != null ? node["event_entry"].InnerText : "";
-            EventExit = node["event_exit"] != null ? node["event_exit"].InnerText : "";
-            EventUpdate = node["event_update"] != null ? node["event_update"].InnerText : "";
+            GuardExit = Root.ReadCodeElement(node["guard_exit"]);
+            EventEntry = Root.ReadCodeElement(node["event_entry"]);
+            EventExit = Root.ReadCodeElement(node["event_exit"]);
+            EventUpdate = Root.ReadCodeElement(node["event_update"]);
         }
 
         public void Write(XmlWriter writer)
@@ -234,33 +234,10 @@ namespace eAIEditor
             writer.WriteEndElement();
             writer.WriteEndElement();
 
-            writer.WriteStartElement("guard_exit");
-            if (!String.IsNullOrWhiteSpace(GuardExit))
-            {
-                writer.WriteString(GuardExit);
-            }
-            writer.WriteEndElement();
-
-            writer.WriteStartElement("event_entry");
-            if (!String.IsNullOrWhiteSpace(EventEntry))
-            {
-                writer.WriteString(EventEntry);
-            }
-            writer.WriteEndElement();
-
-            writer.WriteStartElement("event_exit");
-            if (!String.IsNullOrWhiteSpace(EventExit))
-            {
-                writer.WriteString(EventExit);
-            }
-            writer.WriteEndElement();
-
-            writer.WriteStartElement("event_update");
-            if (!String.IsNullOrWhiteSpace(EventUpdate))
-            {
-                writer.WriteString(EventUpdate);
-            }
-            writer.WriteEndElement();
+            Root.WriteCodeElement(writer, "guard_exit", GuardExit);
+            Root.WriteCodeElement(writer, "event_entry", EventEntry);
+            Root.WriteCodeElement(writer, "event_exit", EventExit);
+            Root.WriteCodeElement(writer, "event_update", EventUpdate);
 
             writer.WriteEndElement();
         }

@@ -136,7 +136,7 @@ namespace eAIEditor
             {
                 Indent = true,
                 IndentChars = "\t",
-                CheckCharacters = false,
+                CheckCharacters = true,
             };
 
             using (var writer = XmlWriter.Create(FileName, settings))
@@ -157,6 +157,47 @@ namespace eAIEditor
             doc.Load(FileName);
 
             Read(doc["fsm"]);
+        }
+
+        public string ReadCodeElement(XmlElement element)
+        {
+            if (element == null)
+            {
+                return "";
+            }
+            string text = element.InnerText;
+
+            string[] lines = text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            text = "";
+            for (int i = 1; i < lines.Length - 1; i++)
+            {
+                var line = lines[i];
+                if (line.Length < 4)
+                {
+                    text += "\n";
+                }
+                else
+                {
+                    text += "\n" + line.Remove(0, 4);
+                }
+            }
+            if (text.Length == 0) return "";
+            return text.Remove(0, 1);
+        }
+
+        public void WriteCodeElement(XmlWriter writer, string node, string text)
+        {
+            writer.WriteStartElement(node);
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                string[] lines = text.Split( new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                foreach (var line in lines)
+                {
+                    writer.WriteString("\n\t\t\t\t" + line);
+                }
+                writer.WriteString("\n\t\t\t");
+            }
+            writer.WriteEndElement();
         }
 
         public void Read(XmlElement node)
