@@ -279,6 +279,16 @@ namespace eAIEditor
             DataContext = m_State = node;
         }
 
+        private void RemoveState(object target, ExecutedRoutedEventArgs e)
+        {
+            m_State.Root.RemoveState(m_State);
+        }
+
+        private void CanRemoveState(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
         private void MouseEnter(object sender, MouseEventArgs e)
         {
             HighlightBorder.BorderBrush = BRUSH_HIGHLIGHT;

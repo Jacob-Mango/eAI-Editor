@@ -4,9 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:eAIEditor"
+             xmlns:commands="clr-namespace:eAIEditor"
              mc:Ignorable="d" 
              Height="40"
              Width="150" RenderTransformOrigin="0.5,0.5">
+	
 	<UserControl.RenderTransform>
 		<TransformGroup>
 			<ScaleTransform/>
@@ -16,6 +18,18 @@
 			<TranslateTransform Y="{Binding Y}"/>
 		</TransformGroup>
 	</UserControl.RenderTransform>
+
+	<UserControl.CommandBindings>
+		<CommandBinding Command="commands:EditorCommands.RemoveState" Executed="RemoveState" CanExecute="CanRemoveState" />
+	</UserControl.CommandBindings>
+
+	<UserControl.ContextMenu>
+		<ContextMenu>
+			<ContextMenu.Items>
+				<MenuItem Header="Add State" Command="commands:EditorCommands.RemoveState" CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+			</ContextMenu.Items>
+		</ContextMenu>
+	</UserControl.ContextMenu>
 
 	<Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Stretch">
 		<Grid Background="Coral" MouseDown="MouseDown" MouseUp="MouseUp" MouseEnter="MouseEnter" MouseLeave="MouseLeave" MouseMove="MouseMove">

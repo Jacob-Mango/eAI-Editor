@@ -10,10 +10,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace eAIEditor
 {
+    public static class EditorCommands
+    {
+        public static readonly RoutedUICommand SaveAll = new RoutedUICommand("SaveAll", "SaveAll", typeof(EditorCommands));
+        public static readonly RoutedUICommand AddState = new RoutedUICommand("AddState", "AddState", typeof(EditorCommands));
+        public static readonly RoutedUICommand RemoveState = new RoutedUICommand("RemoveState", "RemoveState", typeof(EditorCommands));
+
+        static EditorCommands()
+        {
+            CommandManager.RegisterClassCommandBinding(typeof(EditorCommands), new CommandBinding(SaveAll));
+            CommandManager.RegisterClassCommandBinding(typeof(EditorCommands), new CommandBinding(AddState));
+            CommandManager.RegisterClassCommandBinding(typeof(EditorCommands), new CommandBinding(RemoveState));
+        }
+    }
+
     public class UIHelper
     {
         public static T FindChild<T>(DependencyObject parent, string childName)

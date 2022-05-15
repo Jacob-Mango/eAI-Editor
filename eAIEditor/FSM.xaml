@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:eAIEditor"
+             xmlns:commands="clr-namespace:eAIEditor"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -11,8 +12,6 @@
 		<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
 		<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
 		<local:FSMToTabConverter x:Key="FSMToTabConverter"/>
-		<ContextMenu x:Key="MainCtxMenu">
-		</ContextMenu>
 		<DrawingBrush x:Key="GridTile" Stretch="None" TileMode="Tile" Viewport="0,0 150,150" ViewportUnits="Absolute">
 			<DrawingBrush.Drawing>
 				<GeometryDrawing>
@@ -30,6 +29,19 @@
 		</DrawingBrush>
 	</UserControl.Resources>
 
+	<UserControl.CommandBindings>
+		<CommandBinding Command="commands:EditorCommands.AddState" Executed="AddState" CanExecute="CanAddState" />
+	</UserControl.CommandBindings>
+
+	<UserControl.ContextMenu>
+		<ContextMenu>
+			<ContextMenu.Items>
+				<MenuItem Header="Add State" Command="commands:EditorCommands.AddState" CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+			</ContextMenu.Items>
+		</ContextMenu>
+	</UserControl.ContextMenu>
+
 	<Canvas Left="0" Top="0" x:Name="canvas" Background="{StaticResource GridTile}" MouseMove="MouseMove" MouseWheel="MouseWheel" MouseDown="MouseDown" MouseUp="MouseUp" MinWidth="50000" MinHeight="50000" >
+
 	</Canvas>
 </UserControl>

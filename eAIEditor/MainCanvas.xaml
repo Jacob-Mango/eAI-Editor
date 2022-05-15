@@ -16,15 +16,13 @@
 		<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
 		<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
 		<local:FSMToTabConverter x:Key="FSMToTabConverter"/>
-		<ContextMenu x:Key="MainCtxMenu">
-		</ContextMenu>
 	</Window.Resources>
 
 	<Window.CommandBindings>
 		<CommandBinding Command="New" Executed="New" CanExecute="CanNew" />
 		<CommandBinding Command="Open" Executed="Open" CanExecute="CanOpen" />
 		<CommandBinding Command="Save" Executed="Save" CanExecute="CanSave" />
-		<CommandBinding Command="{x:Static commands:AppCommands.SaveAllCommand}" Executed="SaveAll" CanExecute="CanSaveAll" />
+		<CommandBinding Command="commands:EditorCommands.SaveAll" Executed="SaveAll" CanExecute="CanSaveAll" />
 	</Window.CommandBindings>
 
 	<DockPanel>
@@ -33,13 +31,37 @@
 				<MenuItem Header="_New" Command="New"/>
 				<MenuItem Header="_Open" Command="Open"/>
 				<MenuItem Header="_Save" Command="Save"/>
-				<MenuItem Header="_Save All" Command="{x:Static commands:AppCommands.SaveAllCommand}"/>
+				<MenuItem Header="_Save All" Command="commands:EditorCommands.SaveAll"/>
 				<Separator/>
 				<MenuItem Header="_Exit"/>
 			</MenuItem>
 		</Menu>
 		<TabControl x:Name="tabs" ItemsSource="{Binding FSMs, Converter={StaticResource FSMToTabConverter}}" SelectedIndex="{Binding SelectedFSMIndex}">
+			<TabControl.ItemContainerStyle>
+				<Style TargetType="{x:Type TabItem}">
+					<Setter Property="Template">
+						<Setter.Value>
+							<ControlTemplate TargetType="{x:Type TabItem}">
+								<StackPanel Orientation="Horizontal" Background="AliceBlue"  Margin="2" >
+									<StackPanel.ContextMenu>
+										<ContextMenu>
+											<MenuItem Header="Save" />
+											<MenuItem Header="Close" />
+										</ContextMenu>
+									</StackPanel.ContextMenu>
+									<TextBlock Text="{Binding Name}"/>
+								</StackPanel>
 
+								<ControlTemplate.Triggers>
+									<Trigger Property="IsSelected" Value="True">
+										<Setter Property="Panel.ZIndex" Value="100" />
+									</Trigger>
+								</ControlTemplate.Triggers>
+							</ControlTemplate>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</TabControl.ItemContainerStyle>
 		</TabControl>
 	</DockPanel>
 </Window>

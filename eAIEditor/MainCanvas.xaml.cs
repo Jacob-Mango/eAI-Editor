@@ -114,22 +114,6 @@ namespace eAIEditor
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public static class AppCommands
-    {
-        private static RoutedUICommand saveAllCommand = new RoutedUICommand("SaveAll", "SaveAll", typeof(AppCommands));
-
-        public static RoutedCommand SaveAllCommand
-        {
-            get { return saveAllCommand; }
-        }
-
-        static AppCommands()
-        {
-            CommandBinding saveAllBinding = new CommandBinding(saveAllCommand);
-            CommandManager.RegisterClassCommandBinding(typeof(AppCommands), saveAllBinding);
-        }
-    }
-
     /// <summary>
     /// Interaction logic for MainCanvas.xaml
     /// </summary>
@@ -148,7 +132,7 @@ namespace eAIEditor
         {
             SaveFileDialog dialog = new SaveFileDialog();
 
-            dialog.InitialDirectory = "P:\\eai\\Scripts\\FSM";
+            dialog.InitialDirectory = "P:\\DayZExpansion\\AI\\Scripts\\FSM";
             dialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
             dialog.FilterIndex = 2;
             dialog.RestoreDirectory = true;

@@ -23,8 +23,6 @@ namespace eAIEditor
     public class FSM : ViewModelBase
     {
         public MainCanvasContext Root;
-        public ObservableCollection<ViewModelBase> Items { get; }
-
         public ObservableCollection<FSMVariable> Variables { get; } = new ObservableCollection<FSMVariable>();
         public ObservableCollection<FSMState> States { get; }
         public ObservableCollection<FSMTransition> Transitions { get; }
@@ -69,35 +67,53 @@ namespace eAIEditor
             Root = root;
             View = new FSMView(this);
 
-            Items = new ObservableCollection<ViewModelBase>();
             States = new ObservableCollection<FSMState>();
             Transitions = new ObservableCollection<FSMTransition>();
         }
 
         public void AddState(FSMState state)
         {
-            Items.Add(state);
             States.Add(state);
             View.canvas.Children.Add(state.View);
         }
 
         public void RemoveState(FSMState state)
         {
-            Items.Remove(state);
+            if (state == null)
+            {
+                return;
+            }
+
             States.Remove(state);
             View.canvas.Children.Remove(state.View);
+
+            var removing = new List<FSMTransition>();
+            foreach (var transition in Transitions)
+            {
+                if (transition.Destination == state)
+                {
+                    removing.Add(transition);
+                }
+                else if (transition.Source == state)
+                {
+                    removing.Add(transition);
+                }
+            }
+
+            foreach (var transition in removing)
+            {
+                RemoveTransition(transition);
+            }
         }
 
         public void AddTransition(FSMTransition transition)
         {
-            Items.Add(transition);
             Transitions.Add(transition);
             View.canvas.Children.Add(transition.View);
         }
 
         public void RemoveTransition(FSMTransition transition)
         {
-            Items.Remove(transition);
             Transitions.Remove(transition);
             View.canvas.Children.Remove(transition.View);
         }
@@ -263,10 +279,19 @@ namespace eAIEditor
             InitializeComponent();
         }
 
-        private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void AddState(object target, ExecutedRoutedEventArgs e)
         {
-            ContextMenu cm = FindResource("MainCtxMenu") as ContextMenu;
-            cm.IsOpen = true;
+            Point point = Mouse.GetPosition(canvas);
+
+            FSMState state = new FSMState(m_FSM);
+            state.Name = "State " + m_FSM.States.Count();
+            state.Position = point;
+            m_FSM.AddState(state);
+        }
+
+        private void CanAddState(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
         }
 
         private void MouseDown(object sender, MouseButtonEventArgs e)
