@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:eAIEditor"
         xmlns:commands="clr-namespace:eAIEditor"
+		xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"  
+		xmlns:scintilla="clr-namespace:ScintillaNET;assembly=ScintillaNET"  
         mc:Ignorable="d"
         Title="MainCanvas" Height="720" Width="1280">
 
@@ -36,7 +38,41 @@
 				<MenuItem Header="_Exit"/>
 			</MenuItem>
 		</Menu>
-		<TabControl x:Name="tabs" ItemsSource="{Binding FSMs, Converter={StaticResource FSMToTabConverter}}" SelectedIndex="{Binding SelectedFSMIndex}">
+
+
+		<ScrollViewer DockPanel.Dock="Right" x:Name="Control_Transition" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
+			<StackPanel Background="White">
+				<Label Content="Event" />
+				<WindowsFormsHost>
+					<scintilla:Scintilla x:Name="Control_Transition_Event">
+
+					</scintilla:Scintilla>
+				</WindowsFormsHost>
+
+				<Label Content="From" />
+				<WindowsFormsHost>
+					<scintilla:Scintilla x:Name="Control_Transition_From">
+
+					</scintilla:Scintilla>
+				</WindowsFormsHost>
+				
+				<Label Content="To" />
+				<WindowsFormsHost>
+					<scintilla:Scintilla x:Name="Control_Transition_To">
+
+					</scintilla:Scintilla>
+				</WindowsFormsHost>
+				
+				<Label Content="Guard" />
+				<WindowsFormsHost>
+					<scintilla:Scintilla x:Name="Control_Transition_Guard">
+
+					</scintilla:Scintilla>
+				</WindowsFormsHost>
+			</StackPanel>
+		</ScrollViewer>
+
+		<TabControl DockPanel.Dock="Left" x:Name="tabs" ItemsSource="{Binding FSMs, Converter={StaticResource FSMToTabConverter}}" SelectedIndex="{Binding SelectedFSMIndex}">
 			<TabControl.ItemContainerStyle>
 				<Style TargetType="{x:Type TabItem}">
 					<Setter Property="Template">
