@@ -128,7 +128,7 @@ namespace eAIEditor
             m_Context = DataContext as MainCanvasContext;
 
 #if DEBUG
-            m_Context.LoadFSM("P:\\DayZExpansion\\AI\\Scripts\\FSM\\Master.xml");
+            m_Context.LoadFSM("P:\\DayZExpansion\\AI\\Scripts\\FSM\\Test.xml");
 #endif
         }
 

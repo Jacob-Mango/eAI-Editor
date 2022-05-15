@@ -15,6 +15,66 @@ using System.Windows.Media;
 
 namespace eAIEditor
 {
+    public static class EditorHelper
+    {
+        public static Point ClampPoint(Point P, Point center, Point bounds)
+        {
+            Vector _P = new Vector(P.X, P.Y);
+            Vector _center = new Vector(center.X, center.Y);
+            Vector _bounds = new Vector(bounds.X, bounds.Y);
+
+            _center += _bounds * 0.5;
+            _bounds *= 0.5;
+
+            Vector result = ClampVector(_P, _center, _bounds);
+            return new Point(result.X, result.Y);
+        }
+
+        public static Vector ClampVector(Vector P, Vector center, Vector bounds)
+        {
+            Vector closestPoint = new Vector();
+            bool insideX = center.X - bounds.X < P.X && P.X < center.X + bounds.X;
+            bool insideY = center.Y - bounds.Y < P.Y && P.Y < center.Y + bounds.Y;
+            bool pointInsideRectangle = insideX && insideY;
+
+            if (!pointInsideRectangle)
+            {
+                closestPoint.X = Math.Max(center.X - bounds.X, Math.Min(P.X, center.X + bounds.X));
+                closestPoint.Y = Math.Max(center.Y - bounds.Y, Math.Min(P.Y, center.Y + bounds.Y));
+            }
+            else
+            {
+                Vector distanceToPositiveBounds = center + bounds - P;
+                Vector distanceToNegativeBounds = -(center - bounds - P);
+                double smallestX = Math.Min(distanceToPositiveBounds.X, distanceToNegativeBounds.X);
+                double smallestY = Math.Min(distanceToPositiveBounds.Y, distanceToNegativeBounds.Y);
+                double smallestDistance = Math.Min(smallestX, smallestY);
+
+                if (smallestDistance == distanceToPositiveBounds.X)
+                {
+                    closestPoint.X = center.X + bounds.X;
+                    closestPoint.Y = P.Y;
+                }
+                else if (smallestDistance == distanceToNegativeBounds.X)
+                {
+                    closestPoint.X = center.X - bounds.X;
+                    closestPoint.Y = P.Y;
+                }
+                else if (smallestDistance == distanceToPositiveBounds.Y)
+                {
+                    closestPoint.X = P.X;
+                    closestPoint.Y = center.Y + bounds.Y;
+                }
+                else
+                {
+                    closestPoint.X = P.X;
+                    closestPoint.Y = center.Y - bounds.Y;
+                }
+            }
+            return closestPoint;
+        }
+    }
+
     public static class EditorCommands
     {
         public static readonly RoutedUICommand SaveAll = new RoutedUICommand("SaveAll", "SaveAll", typeof(EditorCommands));
@@ -81,7 +141,8 @@ namespace eAIEditor
             DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
             //we've reached the end of the tree
-            if (parentObject == null) {
+            if (parentObject == null)
+            {
                 return null;
             }
 
@@ -89,7 +150,7 @@ namespace eAIEditor
             return parentObject is T parent ? parent : FindParent<T>(parentObject);
         }
     }
-    
+
     public class BooleanVisiblityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
