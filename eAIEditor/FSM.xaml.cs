@@ -266,17 +266,12 @@ namespace eAIEditor
         private readonly MatrixTransform m_Transform = new MatrixTransform();
         private Point? m_MousePosition;
 
-        public FSMView(FSM node)
+        public FSMView(FSM fsm)
         {
             InitializeComponent();
-            DataContext = m_FSM = node;
+            DataContext = m_FSM = fsm;
 
             canvas.RenderTransform = m_Transform;
-        }
-
-        public FSMView()
-        {
-            InitializeComponent();
         }
 
         private void AddState(object target, ExecutedRoutedEventArgs e)
@@ -314,6 +309,11 @@ namespace eAIEditor
 
         private void MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (m_FSM == null)
+            {
+                return;
+            }
+
             var element = (FrameworkElement)sender;
             element.CaptureMouse();
 
@@ -322,6 +322,11 @@ namespace eAIEditor
 
         private void MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (m_FSM == null)
+            {
+                return;
+            }
+
             var element = (FrameworkElement)sender;
             element.ReleaseMouseCapture();
 
@@ -341,6 +346,11 @@ namespace eAIEditor
 
         private void MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            if (m_FSM == null)
+            {
+                return;
+            }
+
             double scaleFactor = 1.1;
             if (e.Delta < 0.0)
             {
@@ -356,6 +366,11 @@ namespace eAIEditor
 
         private void MouseMove(object sender, MouseEventArgs e)
         {
+            if (m_FSM == null)
+            {
+                return;
+            }
+
             if (m_FSM.Root.Dragging)
             {
                 var state = m_FSM.Root.Selected as FSMState;
@@ -387,47 +402,6 @@ namespace eAIEditor
                 var translate = new TranslateTransform(delta.X, delta.Y);
                 m_Transform.Matrix = translate.Value * m_Transform.Matrix;
             }
-        }
-    }
-
-    public class FSMToTabConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            try
-            {
-                var source = (IEnumerable<FSM>)value;
-                if (source != null)
-                {
-                    var controlTemplate = (ControlTemplate)parameter;
-
-                    var tabItems = new List<TabItem>();
-
-                    foreach (FSM fsm in source)
-                    {
-                        var tabItem = new TabItem
-                        {
-                            DataContext = fsm,
-                            Header = fsm.Name,
-                            Content = fsm.View
-                        };
-
-                        tabItems.Add(tabItem);
-                    }
-
-                    return tabItems;
-                }
-                return null;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotSupportedException("ConvertBack method is not supported");
         }
     }
 }

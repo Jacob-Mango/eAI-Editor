@@ -11,7 +11,6 @@
 	<UserControl.Resources>
 		<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
 		<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
-		<local:FSMToTabConverter x:Key="FSMToTabConverter"/>
 		<DrawingBrush x:Key="GridTile" Stretch="None" TileMode="Tile" Viewport="0,0 150,150" ViewportUnits="Absolute">
 			<DrawingBrush.Drawing>
 				<GeometryDrawing>

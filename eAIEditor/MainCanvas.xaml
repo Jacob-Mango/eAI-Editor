@@ -17,7 +17,6 @@
 	<Window.Resources>
 		<local:BooleanVisiblityConverter x:Key="BooleanVisiblityConverter"/>
 		<local:InvertBooleanVisiblityConverter x:Key="InvertBooleanVisiblityConverter"/>
-		<local:FSMToTabConverter x:Key="FSMToTabConverter"/>
 	</Window.Resources>
 
 	<Window.CommandBindings>
@@ -27,8 +26,13 @@
 		<CommandBinding Command="commands:EditorCommands.SaveAll" Executed="SaveAll" CanExecute="CanSaveAll" />
 	</Window.CommandBindings>
 
-	<DockPanel>
-		<Menu DockPanel.Dock="Top">
+	<Grid x:Name="layoutRoot">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<Menu Grid.Row="0">
 			<MenuItem Header="_File">
 				<MenuItem Header="_New" Command="New"/>
 				<MenuItem Header="_Open" Command="Open"/>
@@ -39,65 +43,32 @@
 			</MenuItem>
 		</Menu>
 
+		<DockingManager x:Name="dockManager"
+            Grid.Row="1"
+            AllowMixedOrientation="True"
+            AutoWindowSizeWhenOpened="True"
+			DocumentsSource="{Binding FSMs}"
+            IsVirtualizingAnchorable="True"
+            IsVirtualizingDocument="True">
 
-		<ScrollViewer DockPanel.Dock="Right" x:Name="Control_Transition" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
-			<StackPanel Background="White">
-				<Label Content="Event" />
-				<WindowsFormsHost>
-					<scintilla:Scintilla x:Name="Control_Transition_Event">
+			<DockingManager.DocumentHeaderTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Content.Name}" Margin="4,2,10,2" />
+				</DataTemplate>
+			</DockingManager.DocumentHeaderTemplate>
+			
+			<DockingManager.LayoutItemTemplate>
+				<DataTemplate>
+					<Frame Content="{Binding Content.View}"/>
+				</DataTemplate>
+			</DockingManager.LayoutItemTemplate>
 
-					</scintilla:Scintilla>
-				</WindowsFormsHost>
+			<LayoutRoot>
+				<LayoutPanel Orientation="Horizontal">
+					<LayoutDocumentPane />
+				</LayoutPanel>
+			</LayoutRoot>
+		</DockingManager>
 
-				<Label Content="From" />
-				<WindowsFormsHost>
-					<scintilla:Scintilla x:Name="Control_Transition_From">
-
-					</scintilla:Scintilla>
-				</WindowsFormsHost>
-				
-				<Label Content="To" />
-				<WindowsFormsHost>
-					<scintilla:Scintilla x:Name="Control_Transition_To">
-
-					</scintilla:Scintilla>
-				</WindowsFormsHost>
-				
-				<Label Content="Guard" />
-				<WindowsFormsHost>
-					<scintilla:Scintilla x:Name="Control_Transition_Guard">
-
-					</scintilla:Scintilla>
-				</WindowsFormsHost>
-			</StackPanel>
-		</ScrollViewer>
-
-		<TabControl DockPanel.Dock="Left" x:Name="tabs" ItemsSource="{Binding FSMs, Converter={StaticResource FSMToTabConverter}}" SelectedIndex="{Binding SelectedFSMIndex}">
-			<TabControl.ItemContainerStyle>
-				<Style TargetType="{x:Type TabItem}">
-					<Setter Property="Template">
-						<Setter.Value>
-							<ControlTemplate TargetType="{x:Type TabItem}">
-								<StackPanel Orientation="Horizontal" Background="AliceBlue"  Margin="2" >
-									<StackPanel.ContextMenu>
-										<ContextMenu>
-											<MenuItem Header="Save" />
-											<MenuItem Header="Close" />
-										</ContextMenu>
-									</StackPanel.ContextMenu>
-									<TextBlock Text="{Binding Name}"/>
-								</StackPanel>
-
-								<ControlTemplate.Triggers>
-									<Trigger Property="IsSelected" Value="True">
-										<Setter Property="Panel.ZIndex" Value="100" />
-									</Trigger>
-								</ControlTemplate.Triggers>
-							</ControlTemplate>
-						</Setter.Value>
-					</Setter>
-				</Style>
-			</TabControl.ItemContainerStyle>
-		</TabControl>
-	</DockPanel>
+	</Grid>
 </Window>
