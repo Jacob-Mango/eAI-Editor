@@ -315,7 +315,7 @@ namespace eAIEditor
 
         protected FSMState m_State;
 
-        protected Point m_DragPoint;
+        protected Point? m_MousePosition;
 
         public FSMStateView(FSMState node)
         {
@@ -365,7 +365,8 @@ namespace eAIEditor
                 return;
             }
 
-            m_DragPoint = e.GetPosition(this);
+            var canvas = m_State.Root.View.canvas;
+            m_MousePosition = e.GetPosition(canvas);
 
             m_State.Root.Root.Selected = m_State;
             m_State.Root.Root.Dragging = true;
@@ -378,6 +379,8 @@ namespace eAIEditor
                 return;
             }
 
+            m_MousePosition = null;
+
             m_State.Root.Root.Dragging = false;
         }
 
@@ -388,16 +391,36 @@ namespace eAIEditor
                 return;
             }
 
-            Point position = e.GetPosition(Parent as FrameworkElement);
+            if (m_MousePosition == null)
+            {
+                return;
+            }
 
-            m_State.X = position.X - m_DragPoint.X;
-            m_State.Y = position.Y - m_DragPoint.Y;
+            var canvas = m_State.Root.View.canvas;
+            Point position = e.GetPosition(canvas);
 
-            //Canvas.SetLeft(this, m_State.X);
-            //Canvas.SetTop(this, m_State.Y);
+            Point delta = new Point();
+            delta.X = position.X - m_MousePosition.Value.X;
+            delta.Y = position.Y - m_MousePosition.Value.Y;
+            m_MousePosition = position;
+
+            m_State.X += delta.X;
+            m_State.Y += delta.Y;
 
             foreach (FSMTransition transition in m_State.Transitions)
             {
+                if (transition.Source == m_State || transition.Source == null)
+                {
+                    transition.SrcX += delta.X;
+                    transition.SrcY += delta.Y;
+                }
+
+                if (transition.Destination == m_State || transition.Destination == null)
+                {
+                    transition.DstX += delta.X;
+                    transition.DstY += delta.Y;
+                }
+
                 transition.StateChanged();
             }
         }

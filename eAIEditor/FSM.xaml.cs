@@ -327,6 +327,15 @@ namespace eAIEditor
 
             m_MousePosition = null;
 
+            if (m_FSM.Root.Dragging)
+            {
+                var transition = m_FSM.Root.Selected as FSMTransition;
+                if (transition != null)
+                {
+                    transition.View.MouseUp(sender, e);
+                }
+            }
+
             m_FSM.Root.Dragging = false;
         }
 

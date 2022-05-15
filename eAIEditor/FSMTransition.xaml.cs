@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -129,26 +129,11 @@ namespace eAIEditor
                 return;
             }
 
-            if (Source == null && Destination != null)
+            if (Source != null)
             {
-                SrcX = Destination.X + (Destination.Width * 0.5);
-                SrcY = Destination.Y - NoConnectionOffset;
-            }
-            else if (Source != null && Destination == null)
-            {
-                SrcX = Source.X + (Source.Width * 0.5);
-                SrcY = Source.Y + Source.Height;
-            }
-            else if (Source != null && Destination != null)
-            {
-                Point p = EditorHelper.ClampPoint(Destination.Position, Source.Position, Source.Size);
+                Point p = EditorHelper.ClampPoint(Src, Source.Position, Source.Size);
                 SrcX = p.X;
                 SrcY = p.Y;
-            }
-            else
-            {
-                SrcX = 0;
-                SrcY = 0;
             }
         }
 
@@ -159,26 +144,11 @@ namespace eAIEditor
                 return;
             }
 
-            if (Source != null && Destination == null)
+            if (Destination != null)
             {
-                DstX = Source.X + (Source.Width * 0.5);
-                DstY = Source.Y + Source.Height + NoConnectionOffset;
-            }
-            else if (Source == null && Destination != null)
-            {
-                DstX = Destination.X + (Destination.Width * 0.5);
-                DstY = Destination.Y;
-            }
-            else if (Source != null && Destination != null)
-            {
-                Point p = EditorHelper.ClampPoint(Source.Position, Destination.Position, Destination.Size);
+                Point p = EditorHelper.ClampPoint(Dst, Destination.Position, Destination.Size);
                 DstX = p.X;
                 DstY = p.Y;
-            }
-            else
-            {
-                DstX = 0;
-                DstY = 0;
             }
         }
 
@@ -211,10 +181,10 @@ namespace eAIEditor
             var editor_data = node["editor_data"];
             if (editor_data != null)
             {
-                //_Src_RelX = double.Parse(editor_data["position_source"].GetAttribute("x"));
-                //_Src_RelY = double.Parse(editor_data["position_source"].GetAttribute("y"));
-                //_Dst_RelX = double.Parse(editor_data["position_destination"].GetAttribute("x"));
-                //_Dst_RelY = double.Parse(editor_data["position_destination"].GetAttribute("y"));
+                SrcX = double.Parse(editor_data["position_source"].GetAttribute("x"));
+                SrcY = double.Parse(editor_data["position_source"].GetAttribute("y"));
+                DstX = double.Parse(editor_data["position_destination"].GetAttribute("x"));
+                DstY = double.Parse(editor_data["position_destination"].GetAttribute("y"));
             }
 
             Guard = node["guard"] != null ? node["guard"].InnerText : "";
@@ -274,6 +244,8 @@ namespace eAIEditor
 
     public partial class FSMTransitionView : UserControl
     {
+        public const double ConnectionOffset = 10.0;
+
         protected FSMTransition m_Transition;
         protected FSMState m_HoveringState;
 
@@ -297,15 +269,17 @@ namespace eAIEditor
                 return;
             }
 
-        }
+            var canvas = m_Transition.Root.View.canvas;
 
-        private void Source_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton != MouseButton.Left)
-            {
-                return;
-            }
+            m_DragPoint = e.GetPosition(canvas);
+            m_DragPoint.X -= 6;
+            m_DragPoint.Y -= 6;
 
+            m_Transition.DraggingSource = true;
+            m_Transition.DraggingDestination = false;
+
+            m_Transition.Root.Root.Selected = m_Transition;
+            m_Transition.Root.Root.Dragging = true;
         }
 
         private void Source_MouseMove(object sender, MouseEventArgs e)
@@ -315,6 +289,24 @@ namespace eAIEditor
                 return;
             }
 
+            var canvas = m_Transition.Root.View.canvas;
+
+            Point position = e.GetPosition(canvas);
+
+            m_HoveringState = null;
+            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
+
+            m_Transition.Source = m_HoveringState;
+
+            if (m_Transition.Source == m_Transition.Destination)
+            {
+                m_Transition.Source = null;
+            }
+
+            m_Transition.SrcX = position.X;
+            m_Transition.SrcY = position.Y;
+
+            m_Transition.StateChanged();
         }
 
         private void Destination_MouseDown(object sender, MouseButtonEventArgs e)
@@ -329,15 +321,17 @@ namespace eAIEditor
                 return;
             }
 
-        }
+            var canvas = m_Transition.Root.View.canvas;
 
-        private void Destination_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton != MouseButton.Left)
-            {
-                return;
-            }
+            m_DragPoint = e.GetPosition(canvas);
+            m_DragPoint.X -= 6;
+            m_DragPoint.Y -= 6;
 
+            m_Transition.DraggingDestination = true;
+            m_Transition.DraggingSource = false;
+
+            m_Transition.Root.Root.Selected = m_Transition;
+            m_Transition.Root.Root.Dragging = true;
         }
 
         private void Destination_MouseMove(object sender, MouseEventArgs e)
@@ -347,6 +341,38 @@ namespace eAIEditor
                 return;
             }
 
+            var canvas = m_Transition.Root.View.canvas;
+
+            Point position = e.GetPosition(canvas);
+
+            m_HoveringState = null;
+            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
+
+            m_Transition.Destination = m_HoveringState;
+
+            if (m_Transition.Destination == m_Transition.Source)
+            {
+                m_Transition.Destination = null;
+            }
+
+            m_Transition.DstX = position.X;
+            m_Transition.DstY = position.Y;
+
+            m_Transition.StateChanged();
+        }
+
+        public void MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Left)
+            {
+                return;
+            }
+
+            m_Transition.DraggingSource = false;
+            m_Transition.DraggingDestination = false;
+            m_Transition.StateChanged();
+
+            m_Transition.Root.Root.Dragging = false;
         }
 
         public void MouseMove(object sender, MouseEventArgs e)

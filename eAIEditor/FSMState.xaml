@@ -14,8 +14,7 @@
 			<ScaleTransform/>
 			<SkewTransform/>
 			<RotateTransform/>
-			<TranslateTransform X="{Binding X}"/>
-			<TranslateTransform Y="{Binding Y}"/>
+			<TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
 		</TransformGroup>
 	</UserControl.RenderTransform>
 

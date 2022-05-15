@@ -17,6 +17,16 @@ namespace eAIEditor
 {
     public static class EditorHelper
     {
+        public static bool IsPointWithin(Point p, Point min, Point max)
+        {
+            if (p.X < min.X) return false;
+            if (p.X > max.X) return false;
+            if (p.Y < min.Y) return false;
+            if (p.Y > max.Y) return false;
+
+            return true;
+        }
+
         public static Point ClampPoint(Point P, Point center, Point bounds)
         {
             Vector _P = new Vector(P.X, P.Y);
