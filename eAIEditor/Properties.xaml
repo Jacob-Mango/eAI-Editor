@@ -10,8 +10,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-	<Grid>
-		<Grid Visibility="Hidden">
+	<Grid Background="Transparent">
+		<Grid Background="Transparent" Visibility="Hidden">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
@@ -23,16 +23,16 @@
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 
-			<Label Content="Event" Grid.Row="0"/>
+			<Label Content="Event" Grid.Row="0" Foreground="White"/>
 			<TextBox Text="{Binding Transition.Event}" Grid.Row="1" />
 
-			<Label Content="From" Grid.Row="2"/>
+			<Label Content="From" Grid.Row="2" Foreground="White"/>
 			<TextBox Text="{Binding Transition.Event}" Grid.Row="3" />
 
-			<Label Content="To" Grid.Row="4"/>
+			<Label Content="To" Grid.Row="4" Foreground="White"/>
 			<TextBox Text="{Binding Transition.Event}" Grid.Row="5" />
 
-			<Label Content="Guard" Grid.Row="6"/>
+			<Label Content="Guard" Grid.Row="6" Foreground="White"/>
 			<WindowsFormsHost 
 				Grid.Row="7"
 				local:WindowsFormsHostMap.Text="{Binding Transition.Guard}">
@@ -43,7 +43,7 @@
 			</WindowsFormsHost>
 		</Grid>
 
-		<Grid Visibility="Visible">
+		<Grid Background="Transparent" Visibility="Visible">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
@@ -53,9 +53,9 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<Label Content="Variables" Grid.Row="0"/>
+			<Label Content="Variables" Grid.Row="0" Foreground="White"/>
 
-			<Label Content="Event Entry" Grid.Row="1"/>
+			<Label Content="Event Entry" Grid.Row="1" Foreground="White"/>
 			<WindowsFormsHost 
 				Grid.Row="2"
 				local:WindowsFormsHostMap.Text="{Binding State.EventEntry}">
@@ -65,7 +65,7 @@
 				</WindowsFormsHost.Child>
 			</WindowsFormsHost>
 
-			<Label Content="Event Exit" Grid.Row="3"/>
+			<Label Content="Event Exit" Grid.Row="3" Foreground="White"/>
 			<WindowsFormsHost 
 				Grid.Row="4"
 				local:WindowsFormsHostMap.Text="{Binding State.EventExit}">
@@ -75,7 +75,7 @@
 				</WindowsFormsHost.Child>
 			</WindowsFormsHost>
 
-			<Label Content="Event Update" Grid.Row="5"/>
+			<Label Content="Event Update" Grid.Row="5" Foreground="White"/>
 			<WindowsFormsHost 
 				Grid.Row="6"
 				local:WindowsFormsHostMap.Text="{Binding State.EventUpdate}">

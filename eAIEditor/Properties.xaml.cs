@@ -31,7 +31,6 @@ namespace eAIEditor
             "while",
             "delete",
             "default",
-            "exception",
             "return",
             "private",
             "public",
@@ -117,25 +116,137 @@ namespace eAIEditor
             return System.Drawing.Color.FromArgb(value);
         }
 
+        private const int BACK_COLOR = 0x2A211C;
+
+        private const int FORE_COLOR = 0xB7B7B7;
+
+        private const int NUMBER_MARGIN = 1;
+
+        private const int BOOKMARK_MARGIN = 2;
+        private const int BOOKMARK_MARKER = 2;
+
+        private const int FOLDING_MARGIN = 3;
+
+        private const bool CODEFOLDING_CIRCULAR = true;
+
         void InitScintilla(Scintilla area)
         {
             area.UseTabs = true;
             area.Lexer = Lexer.Cpp;
 
+            //area.Dock = System.Windows.Forms.DockStyle.Fill;
+
+            area.WrapMode = WrapMode.None;
+            area.IndentationGuides = IndentView.LookBoth;
+
+            InitColors(area);
             InitSyntaxColoring(area);
+
+            // NUMBER MARGIN
+            InitNumberMargin(area);
+
+            // BOOKMARK MARGIN
+            InitBookmarkMargin(area);
+
+            // CODE FOLDING MARGIN
+            InitCodeFolding(area);
+        }
+
+        private void InitColors(Scintilla area)
+        {
+            area.SetSelectionBackColor(true, IntToColor(0x114D9C));
+
+            area.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //area.CaretLineVisible = true;
+            //area.CaretLineBackColor = IntToColor(0x114D9C);
+        }
+
+        private void InitNumberMargin(Scintilla area)
+        {
+            area.Styles[ScintillaNET.Style.LineNumber].BackColor = IntToColor(BACK_COLOR);
+            area.Styles[ScintillaNET.Style.LineNumber].ForeColor = IntToColor(FORE_COLOR);
+            area.Styles[ScintillaNET.Style.IndentGuide].ForeColor = IntToColor(FORE_COLOR);
+            area.Styles[ScintillaNET.Style.IndentGuide].BackColor = IntToColor(BACK_COLOR);
+
+            var nums = area.Margins[NUMBER_MARGIN];
+            nums.Width = 30;
+            nums.Type = MarginType.Number;
+            nums.Sensitive = true;
+            nums.Mask = 0;
+
+            //area.MarginClick += TextArea_MarginClick;
+        }
+
+
+        private void InitBookmarkMargin(Scintilla area)
+        {
+
+            //TextArea.SetFoldMarginColor(true, IntToColor(BACK_COLOR));
+
+            var margin = area.Margins[BOOKMARK_MARGIN];
+            margin.Width = 20;
+            margin.Sensitive = true;
+            margin.Type = MarginType.Symbol;
+            margin.Mask = (1 << BOOKMARK_MARKER);
+            //margin.Cursor = MarginCursor.Arrow;
+
+            var marker = area.Markers[BOOKMARK_MARKER];
+            marker.Symbol = MarkerSymbol.Circle;
+            marker.SetBackColor(IntToColor(0xFF003B));
+            marker.SetForeColor(IntToColor(0x000000));
+            marker.SetAlpha(100);
+
+        }
+
+        private void InitCodeFolding(Scintilla area)
+        {
+
+            area.SetFoldMarginColor(true, IntToColor(BACK_COLOR));
+            area.SetFoldMarginHighlightColor(true, IntToColor(BACK_COLOR));
+
+            // Enable code folding
+            area.SetProperty("fold", "1");
+            area.SetProperty("fold.compact", "1");
+
+            // Configure a margin to display folding symbols
+            area.Margins[FOLDING_MARGIN].Type = MarginType.Symbol;
+            area.Margins[FOLDING_MARGIN].Mask = Marker.MaskFolders;
+            area.Margins[FOLDING_MARGIN].Sensitive = true;
+            area.Margins[FOLDING_MARGIN].Width = 20;
+
+            // Set colors for all folding markers
+            for (int i = 25; i <= 31; i++)
+            {
+                area.Markers[i].SetForeColor(IntToColor(BACK_COLOR)); // styles for [+] and [-]
+                area.Markers[i].SetBackColor(IntToColor(FORE_COLOR)); // styles for [+] and [-]
+            }
+
+            // Configure folding markers with respective symbols
+            area.Markers[Marker.Folder].Symbol = CODEFOLDING_CIRCULAR ? MarkerSymbol.CirclePlus : MarkerSymbol.BoxPlus;
+            area.Markers[Marker.FolderOpen].Symbol = CODEFOLDING_CIRCULAR ? MarkerSymbol.CircleMinus : MarkerSymbol.BoxMinus;
+            area.Markers[Marker.FolderEnd].Symbol = CODEFOLDING_CIRCULAR ? MarkerSymbol.CirclePlusConnected : MarkerSymbol.BoxPlusConnected;
+            area.Markers[Marker.FolderMidTail].Symbol = MarkerSymbol.TCorner;
+            area.Markers[Marker.FolderOpenMid].Symbol = CODEFOLDING_CIRCULAR ? MarkerSymbol.CircleMinusConnected : MarkerSymbol.BoxMinusConnected;
+            area.Markers[Marker.FolderSub].Symbol = MarkerSymbol.VLine;
+            area.Markers[Marker.FolderTail].Symbol = MarkerSymbol.LCorner;
+
+            // Enable automatic folding
+            area.AutomaticFold = (AutomaticFold.Show | AutomaticFold.Click | AutomaticFold.Change);
+
         }
 
         void InitSyntaxColoring(Scintilla area)
         {
             area.StyleResetDefault();
 
-            area.Styles[ScintillaNET.Style.Default].Font = "Consolas";
-            area.Styles[ScintillaNET.Style.Default].Size = 10;
             area.Styles[ScintillaNET.Style.Default].BackColor = IntToColor(0x212121);
             area.Styles[ScintillaNET.Style.Default].ForeColor = IntToColor(0xFFFFFF);
             area.StyleClearAll();
 
             area.CaretForeColor = IntToColor(0xFFFFFF);
+
+            area.Styles[ScintillaNET.Style.Default].Font = "Consolas";
+            area.Styles[ScintillaNET.Style.Default].Size = 10;
 
             area.Styles[ScintillaNET.Style.Cpp.Identifier].ForeColor = IntToColor(0xD0DAE2);
             area.Styles[ScintillaNET.Style.Cpp.Comment].ForeColor = IntToColor(0xBD758B);
@@ -156,7 +267,6 @@ namespace eAIEditor
 
             area.SetKeywords(0, _keywords_0);
             area.SetKeywords(1, _keywords_1);
-
         }
     }
 

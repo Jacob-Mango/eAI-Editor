@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              Height="40"
              Width="150" RenderTransformOrigin="0.5,0.5">
-	
+
 	<UserControl.RenderTransform>
 		<TransformGroup>
 			<ScaleTransform/>
@@ -32,10 +32,19 @@
 		</ContextMenu>
 	</UserControl.ContextMenu>
 
-	<Border x:Name="HighlightBorder" BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Stretch">
-		<Grid Background="Coral" MouseDown="MouseDown" MouseUp="MouseUp" MouseEnter="MouseEnter" MouseLeave="MouseLeave" MouseMove="MouseMove">
-			<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-		</Grid>
+	<Border 
+		x:Name="HighlightBorder"
+		BorderBrush="#1A1A1A"
+		BorderThickness="1"
+		HorizontalAlignment="Stretch"
+		CornerRadius="10"
+		Background="#FFA05E0F"
+		MouseDown="MouseDown"
+		MouseUp="MouseUp"
+		MouseEnter="MouseEnter"
+		MouseLeave="MouseLeave" 
+		MouseMove="MouseMove">
+		<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 	</Border>
 
 </UserControl>
