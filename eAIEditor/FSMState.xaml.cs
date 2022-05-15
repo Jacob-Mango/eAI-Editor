@@ -125,6 +125,48 @@ namespace eAIEditor
             View = new FSMStateView(this);
         }
 
+        public void CopyToClipboard()
+        {
+            XmlWriterSettings settings = new XmlWriterSettings
+            {
+                Indent = true,
+                IndentChars = "\t",
+                CheckCharacters = true,
+            };
+
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = XmlWriter.Create(stream, settings))
+                {
+                    writer.WriteStartDocument();
+
+                    Write(writer);
+
+                    writer.WriteEndDocument();
+                }
+
+                stream.Seek(0, SeekOrigin.Begin);
+
+                using (var reader = new StreamReader(stream))
+                {
+                    Clipboard.SetText(reader.ReadToEnd());
+                }
+            }
+        }
+
+        public void PasteFromClipboard()
+        {
+            XmlDocument doc = new XmlDocument();
+            string text = Clipboard.GetText();
+
+            using (var stream = new MemoryStream((System.Text.Encoding.UTF8.GetBytes(text))))
+            {
+                doc.Load(stream);
+
+                Read(doc["state"]);
+            }
+        }
+
         public void Read(XmlElement node)
         {
             Name = node.Attributes["name"].Value;
@@ -164,6 +206,8 @@ namespace eAIEditor
             writer.WriteStartElement("state");
             if (!String.IsNullOrWhiteSpace(Name))
             {
+                Name.Replace(" ", "_");
+
                 writer.WriteAttributeString("name", Name);
             }
 
@@ -285,6 +329,16 @@ namespace eAIEditor
         }
 
         private void CanRemoveState(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CopyState(object target, ExecutedRoutedEventArgs e)
+        {
+            m_State.CopyToClipboard();
+        }
+
+        private void CanCopyState(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }

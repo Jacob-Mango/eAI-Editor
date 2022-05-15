@@ -31,12 +31,14 @@
 
 	<UserControl.CommandBindings>
 		<CommandBinding Command="commands:EditorCommands.AddState" Executed="AddState" CanExecute="CanAddState" />
+		<CommandBinding Command="Paste" Executed="PasteState" CanExecute="CanPasteState" />
 	</UserControl.CommandBindings>
 
 	<UserControl.ContextMenu>
 		<ContextMenu>
 			<ContextMenu.Items>
 				<MenuItem Header="Add State" Command="commands:EditorCommands.AddState" CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+				<MenuItem Header="Paste State" Command="Paste" CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
 			</ContextMenu.Items>
 		</ContextMenu>
 	</UserControl.ContextMenu>

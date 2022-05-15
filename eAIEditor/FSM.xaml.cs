@@ -284,12 +284,30 @@ namespace eAIEditor
             Point point = Mouse.GetPosition(canvas);
 
             FSMState state = new FSMState(m_FSM);
-            state.Name = "State " + m_FSM.States.Count();
+            state.Name = "State_" + m_FSM.States.Count();
             state.Position = point;
             m_FSM.AddState(state);
         }
 
         private void CanAddState(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void PasteState(object target, ExecutedRoutedEventArgs e)
+        {
+            Point point = Mouse.GetPosition(canvas);
+
+            FSMState state = new FSMState(m_FSM);
+            state.PasteFromClipboard();
+
+            state.Name = state.Name + "_Copy";
+            state.Position = point;
+
+            m_FSM.AddState(state);
+        }
+
+        private void CanPasteState(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
