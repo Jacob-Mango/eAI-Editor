@@ -1,4 +1,5 @@
 ﻿using AvalonDock;
+using AvalonDock.Layout;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,8 @@ namespace eAIEditor
             get => _selectedFSMIndex;
         }
 
-        public FSM FocusedFSM {
+        public FSM FocusedFSM
+        {
             set
             {
                 SelectedFSMIndex = FSMs.IndexOf(value);
@@ -51,11 +53,33 @@ namespace eAIEditor
                 }
 
                 return FSMs[SelectedFSMIndex];
-            } 
+            }
         }
 
-        public ViewModelBase Selected;
+        private ViewModelBase _selected;
+        public ViewModelBase Selected
+        {
+            get
+            {
+                return _selected;
+            }
+            set
+            {
+                _selected = value;
+                State = _selected as FSMState;
+                Transition = _selected as FSMTransition;
+
+
+                OnPropertyChanged();
+                OnPropertyChanged("State");
+                OnPropertyChanged("Transition");
+            }
+        }
+
         public bool Dragging;
+
+        public FSMState State { get; private set; }
+        public FSMTransition Transition { get; private set; }
 
         public MainCanvasContext()
         {
@@ -81,9 +105,9 @@ namespace eAIEditor
             fsm.Load(filename);
             FSMs.Add(fsm);
 
-            FocusedFSM = fsm;
-
             OnPropertyChanged("FSMs");
+
+            FocusedFSM = fsm;
         }
 
         public void NewFSM(string filename)
@@ -115,9 +139,47 @@ namespace eAIEditor
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    /// <summary>
-    /// Interaction logic for MainCanvas.xaml
-    /// </summary>
+    public class PanesTemplateSelector : DataTemplateSelector
+    {
+        public PanesTemplateSelector()
+        {
+        }
+
+        public DataTemplate FSM
+        {
+            get;
+            set;
+        }
+
+        public DataTemplate State
+        {
+            get;
+            set;
+        }
+
+        public DataTemplate Transition
+        {
+            get;
+            set;
+        }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            var itemAsLayoutContent = item as LayoutContent;
+
+            if (item is FSM)
+                return FSM;
+
+            if (item is FSMState)
+                return State;
+
+            if (item is FSMTransition)
+                return Transition;
+
+            return base.SelectTemplate(item, container);
+        }
+    }
+
     public partial class MainCanvas : Window
     {
         protected MainCanvasContext m_Context;

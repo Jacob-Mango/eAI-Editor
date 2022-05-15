@@ -47,6 +47,7 @@
             Grid.Row="1"
             AllowMixedOrientation="True"
             AutoWindowSizeWhenOpened="True"
+			ActiveContent="{Binding FocusedFSM}"
 			DocumentsSource="{Binding FSMs}"
             IsVirtualizingAnchorable="True"
             IsVirtualizingDocument="True">
@@ -56,16 +57,36 @@
 					<TextBlock Text="{Binding Content.Name}" Margin="4,2,10,2" />
 				</DataTemplate>
 			</DockingManager.DocumentHeaderTemplate>
-			
-			<DockingManager.LayoutItemTemplate>
-				<DataTemplate>
-					<Frame Content="{Binding Content.View}"/>
-				</DataTemplate>
-			</DockingManager.LayoutItemTemplate>
+
+			<DockingManager.LayoutItemTemplateSelector>
+				<local:PanesTemplateSelector>
+					<local:PanesTemplateSelector.FSM>
+						<DataTemplate>
+							<Frame Content="{Binding View}"/>
+						</DataTemplate>
+					</local:PanesTemplateSelector.FSM>
+					<local:PanesTemplateSelector.State>
+						<DataTemplate>
+							<local:PropertiesView></local:PropertiesView>
+						</DataTemplate>
+					</local:PanesTemplateSelector.State>
+					<local:PanesTemplateSelector.Transition>
+						<DataTemplate>
+							<local:PropertiesView></local:PropertiesView>
+						</DataTemplate>
+					</local:PanesTemplateSelector.Transition>
+				</local:PanesTemplateSelector>
+			</DockingManager.LayoutItemTemplateSelector>
 
 			<LayoutRoot>
 				<LayoutPanel Orientation="Horizontal">
 					<LayoutDocumentPane />
+
+					<LayoutAnchorablePane Name="ToolsPane" DockWidth="300">
+						<LayoutAnchorable>
+							<local:PropertiesView></local:PropertiesView>
+						</LayoutAnchorable>
+					</LayoutAnchorablePane>
 				</LayoutPanel>
 			</LayoutRoot>
 		</DockingManager>
