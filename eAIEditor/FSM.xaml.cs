@@ -306,6 +306,7 @@ namespace eAIEditor
 
         private readonly MatrixTransform m_Transform = new MatrixTransform();
         private Point? m_MousePosition;
+        private Point m_MousePositionContextMenu;
 
         public FSMView(FSM fsm)
         {
@@ -321,7 +322,7 @@ namespace eAIEditor
 
             FSMState state = new FSMState(m_FSM);
             state.Name = "State_" + m_FSM.States.Count();
-            state.Position = point;
+            state.Position = m_MousePositionContextMenu;
             m_FSM.AddState(state);
         }
 
@@ -330,7 +331,20 @@ namespace eAIEditor
             e.CanExecute = true;
         }
 
-        private void PasteState(object target, ExecutedRoutedEventArgs e)
+        private void AddTransition(object target, ExecutedRoutedEventArgs e)
+        {
+            FSMTransition transition = new FSMTransition(m_FSM);
+            transition.Src = m_MousePositionContextMenu;
+            transition.Dst = new Point(m_MousePositionContextMenu.X, m_MousePositionContextMenu.Y + 20);
+            m_FSM.AddTransition(transition);
+        }
+
+        private void CanAddTransition(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void Paste(object target, ExecutedRoutedEventArgs e)
         {
             Point point = Mouse.GetPosition(canvas);
 
@@ -343,7 +357,7 @@ namespace eAIEditor
             m_FSM.AddState(state);
         }
 
-        private void CanPasteState(object sender, CanExecuteRoutedEventArgs e)
+        private void CanPaste(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
@@ -353,6 +367,16 @@ namespace eAIEditor
             if (m_FSM == null)
             {
                 return;
+            }
+
+            if (e.ChangedButton == MouseButton.Right)
+            {
+                m_MousePositionContextMenu = Mouse.GetPosition(canvas);
+            }
+
+            if (e.OriginalSource == canvas)
+            {
+                m_FSM.Root.Selected = null;
             }
 
             var element = (FrameworkElement)sender;

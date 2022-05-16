@@ -56,7 +56,7 @@ namespace eAIEditor
         }
     }
 
-    public class FSMStateConverter : IValueConverter
+    public class FSMStatesConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -71,6 +71,26 @@ namespace eAIEditor
                 }
 
                 return strings;
+            }
+
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+       
+    public class FSMStateConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var state = (FSMState)value;
+
+            if (state != null)
+            {
+                return state.Name;
             }
 
             return "";

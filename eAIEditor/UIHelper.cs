@@ -89,13 +89,13 @@ namespace eAIEditor
     {
         public static readonly RoutedUICommand SaveAll = new RoutedUICommand("SaveAll", "SaveAll", typeof(EditorCommands));
         public static readonly RoutedUICommand AddState = new RoutedUICommand("AddState", "AddState", typeof(EditorCommands));
-        public static readonly RoutedUICommand RemoveState = new RoutedUICommand("RemoveState", "RemoveState", typeof(EditorCommands));
+        public static readonly RoutedUICommand AddTransition = new RoutedUICommand("AddTransition", "AddTransition", typeof(EditorCommands));
 
         static EditorCommands()
         {
             CommandManager.RegisterClassCommandBinding(typeof(EditorCommands), new CommandBinding(SaveAll));
             CommandManager.RegisterClassCommandBinding(typeof(EditorCommands), new CommandBinding(AddState));
-            CommandManager.RegisterClassCommandBinding(typeof(EditorCommands), new CommandBinding(RemoveState));
+            CommandManager.RegisterClassCommandBinding(typeof(EditorCommands), new CommandBinding(AddTransition));
         }
     }
 

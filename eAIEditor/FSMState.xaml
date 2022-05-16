@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:eAIEditor"
              xmlns:commands="clr-namespace:eAIEditor"
              mc:Ignorable="d" 
-             Height="40"
-             Width="150" RenderTransformOrigin="0.5,0.5">
+             Width="{Binding Width}"
+             Height="{Binding Height}" RenderTransformOrigin="0.5,0.5">
 
 	<UserControl.RenderTransform>
 		<TransformGroup>
@@ -19,14 +19,14 @@
 	</UserControl.RenderTransform>
 
 	<UserControl.CommandBindings>
-		<CommandBinding Command="commands:EditorCommands.RemoveState" Executed="RemoveState" CanExecute="CanRemoveState" />
+		<CommandBinding Command="Delete" Executed="DeleteState" CanExecute="CanDeleteState" />
 		<CommandBinding Command="Copy" Executed="CopyState" CanExecute="CanCopyState" />
 	</UserControl.CommandBindings>
 
 	<UserControl.ContextMenu>
 		<ContextMenu>
 			<ContextMenu.Items>
-				<MenuItem Header="Add State" Command="commands:EditorCommands.RemoveState" CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+				<MenuItem Header="Delete State" Command="Delete" CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
 				<MenuItem Header="Copy State" Command="Copy" CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
 			</ContextMenu.Items>
 		</ContextMenu>

@@ -13,6 +13,7 @@
 
 	<UserControl.Resources>
 		<local:TypeMatchesConverter x:Key="TypeMatchesConverter"/>
+		<local:FSMStatesConverter x:Key="FSMStatesConverter"/>
 		<local:FSMStateConverter x:Key="FSMStateConverter"/>
 		<local:NullVisibilityConverter x:Key="NullVisibilityConverter"/> 
 	</UserControl.Resources>
@@ -73,7 +74,17 @@
 
 				<Label Content="From:" MinWidth="50" Grid.Column="0" Foreground="White" FontWeight="Bold"/>
 
-				<ComboBox Grid.Column="1" ItemsSource="{Binding FocusedFSM.States, Converter={StaticResource FSMStateConverter}}" BorderBrush="#00000000" />
+				<ComboBox 
+					Grid.Column="1" 
+					ItemsSource="{Binding FocusedFSM.States}" 
+					SelectedItem="{Binding Transition.Source, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					BorderBrush="Transparent" Background="Transparent" BorderThickness="0">
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Name}" Background="Transparent"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 			</Grid>
 
 			<Grid Grid.Row="2">
@@ -83,7 +94,17 @@
 				</Grid.ColumnDefinitions>
 
 				<Label Content="To:" MinWidth="50" Grid.Column="0" Foreground="White" FontWeight="Bold"/>
-				<ComboBox Grid.Column="1" ItemsSource="{Binding FocusedFSM.States, Converter={StaticResource FSMStateConverter}}" BorderBrush="#00000000" />
+				<ComboBox 
+					Grid.Column="1" 
+					ItemsSource="{Binding FocusedFSM.States}" 
+					SelectedItem="{Binding Transition.Destination, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					BorderBrush="Transparent" Background="Transparent" BorderThickness="0">
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Name}" Background="Transparent"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 			</Grid>
 
 			<Label Content="Guard:" Grid.Row="3" Foreground="White" FontWeight="Bold"/>

@@ -303,6 +303,26 @@ namespace eAIEditor
             UpdateColors();
         }
 
+        private void DeleteTransition(object target, ExecutedRoutedEventArgs e)
+        {
+            m_Transition.Root.RemoveTransition(m_Transition);
+        }
+
+        private void CanDeleteTransition(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CopyTransition(object target, ExecutedRoutedEventArgs e)
+        {
+            //m_Transition.CopyToClipboard();
+        }
+
+        private void CanCopyTransition(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
         private void MouseEnter(object sender, MouseEventArgs e)
         {
             if (sender == SourceBounds)

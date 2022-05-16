@@ -117,6 +117,9 @@ namespace eAIEditor
         {
             Root = root;
             View = new FSMStateView(this);
+
+            Width = 150;
+            Height = 40;
         }
 
         public void CopyToClipboard()
@@ -299,12 +302,12 @@ namespace eAIEditor
             UpdateSelected();
         }
 
-        private void RemoveState(object target, ExecutedRoutedEventArgs e)
+        private void DeleteState(object target, ExecutedRoutedEventArgs e)
         {
             m_State.Root.RemoveState(m_State);
         }
 
-        private void CanRemoveState(object sender, CanExecuteRoutedEventArgs e)
+        private void CanDeleteState(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
