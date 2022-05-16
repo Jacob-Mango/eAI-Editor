@@ -17,11 +17,11 @@
 			<RowDefinition Height="auto"/>
 		</Grid.RowDefinitions>
 
-		<TextBox Text="{Binding Type}" Grid.Column="0" Grid.Row="0" Background="Transparent" Foreground="White"/>
-		<TextBox Text="{Binding Name}" Grid.Column="1" Grid.Row="0" Background="Transparent" Foreground="White"/>
-		<TextBox Text="{Binding Default}" Grid.Column="2" Grid.Row="0" Background="Transparent" Foreground="White"/>
+		<TextBox Text="{Binding Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Grid.Row="0" Background="Transparent" Foreground="White"/>
+		<TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="0" Background="Transparent" Foreground="White"/>
+		<TextBox Text="{Binding Default, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Grid.Row="0" Background="Transparent" Foreground="White"/>
 		<Button Grid.Column="3" Grid.Row="0" Background="Transparent" BorderThickness="0" Click="RemoveVariable">
-			<Canvas Name="canvas" Height="20"  Width="20">
+			<Canvas Name="canvas" Height="20" Width="20">
 				<Path Stroke="#FFFFFFFF" StrokeThickness="2">
 					<Path.Data>
 						<PathGeometry>

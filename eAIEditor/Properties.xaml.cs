@@ -193,6 +193,14 @@ namespace eAIEditor
             InitScintilla(Control_State_EventUpdate);
         }
 
+        private void AddFSMVariable(object sender, RoutedEventArgs e)
+        {
+            var context = DataContext as MainCanvasContext;
+
+            var variable = new FSMVariable(context.FocusedFSM);
+            context.FocusedFSM.Variables.Add(variable);
+        }
+
         private void AddStateVariable(object sender, RoutedEventArgs e)
         {
             var context = DataContext as MainCanvasContext;
