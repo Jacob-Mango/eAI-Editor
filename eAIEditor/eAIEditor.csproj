@@ -114,6 +114,9 @@
     <Compile Include="FSMTransition.xaml.cs">
       <DependentUpon>FSMTransition.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FSMVariable.xaml.cs">
+      <DependentUpon>FSMVariable.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainCanvas.xaml.cs">
       <DependentUpon>MainCanvas.xaml</DependentUpon>
     </Compile>
@@ -132,6 +135,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FSMTransition.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FSMVariable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

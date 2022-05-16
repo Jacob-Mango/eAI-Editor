@@ -193,6 +193,14 @@ namespace eAIEditor
             InitScintilla(Control_State_EventUpdate);
         }
 
+        private void AddStateVariable(object sender, RoutedEventArgs e)
+        {
+            var context = DataContext as MainCanvasContext;
+
+            var variable = new FSMVariable(context.State);
+            context.State.Variables.Add(variable);
+        }
+
         System.Drawing.Color IntToColor(int value)
         {
             return System.Drawing.Color.FromArgb(value);

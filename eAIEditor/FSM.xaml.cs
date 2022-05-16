@@ -220,9 +220,11 @@ namespace eAIEditor
             XmlElement variables = node["variables"];
             if (variables != null)
             {
-                foreach (var variable in variables.OfType<XmlElement>())
+                foreach (var variableNode in variables.OfType<XmlElement>())
                 {
-                    Variables.Add(new FSMVariable(variable));
+                    var variable = new FSMVariable(this);
+                    variable.Read(variableNode);
+                    Variables.Add(variable);
                 }
             }
 

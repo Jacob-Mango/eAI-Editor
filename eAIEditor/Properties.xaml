@@ -15,7 +15,7 @@
 		<local:TypeMatchesConverter x:Key="TypeMatchesConverter"/>
 		<local:FSMStatesConverter x:Key="FSMStatesConverter"/>
 		<local:FSMStateConverter x:Key="FSMStateConverter"/>
-		<local:NullVisibilityConverter x:Key="NullVisibilityConverter"/> 
+		<local:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
 	</UserControl.Resources>
 
 	<Grid Background="Transparent">
@@ -40,7 +40,7 @@
 			<Grid Grid.Row="2">
 			</Grid>
 		</Grid>
-		
+
 		<Grid Background="Transparent">
 			<Grid.Visibility>
 				<MultiBinding Converter="{StaticResource TypeMatchesConverter}">
@@ -65,7 +65,7 @@
 				<Label Content="Event:" MinWidth="50" Grid.Column="0" Foreground="White" FontWeight="Bold"/>
 				<TextBox Text="{Binding Transition.Event, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White"/>
 			</Grid>
-			
+
 			<Grid Grid.Row="1">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
@@ -128,15 +128,11 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" /> <!-- TODO: Replace with fill (*) -->
-				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			
+
 			<Grid Grid.Row="0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
@@ -147,39 +143,63 @@
 				<TextBox Text="{Binding State.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White"/>
 			</Grid>
 
-			<Label Content="Variables:" Grid.Row="1" Foreground="White" FontWeight="Bold"/>
-			<Grid Grid.Row="2">
+			<Grid Grid.Row="1">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Label Content="Variables:" Grid.Row="0" Foreground="White" FontWeight="Bold"/>
+				<ScrollViewer Grid.Row="1" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+					<ItemsControl ItemsSource="{Binding State.Variables}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Frame Content="{Binding View}"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+				<Button Grid.Row="2" Content="Add" Click="AddStateVariable" ></Button>
 			</Grid>
 
-			<Label Content="Event Entry:" Grid.Row="3" Foreground="White" FontWeight="Bold"/>
-			<WindowsFormsHost 
-				Grid.Row="4"
-				local:WindowsFormsHostMap.Text="{Binding State.EventEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+			<Grid Grid.Row="2">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<Label Content="Event Entry:" Grid.Row="0" Foreground="White" FontWeight="Bold"/>
+				<WindowsFormsHost  Grid.Row="1" local:WindowsFormsHostMap.Text="{Binding State.EventEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+					<WindowsFormsHost.Child>
+						<scintilla:Scintilla x:Name="Control_State_EventEntry"/>
+					</WindowsFormsHost.Child>
+				</WindowsFormsHost>
+			</Grid>
 
-				<WindowsFormsHost.Child>
-					<scintilla:Scintilla x:Name="Control_State_EventEntry"/>
-				</WindowsFormsHost.Child>
-			</WindowsFormsHost>
+			<Grid Grid.Row="3">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<Label Content="Event Exit:" Grid.Row="0" Foreground="White" FontWeight="Bold"/>
+				<WindowsFormsHost Grid.Row="1" local:WindowsFormsHostMap.Text="{Binding State.EventExit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+					<WindowsFormsHost.Child>
+						<scintilla:Scintilla x:Name="Control_State_EventExit"/>
+					</WindowsFormsHost.Child>
+				</WindowsFormsHost>
+			</Grid>
 
-			<Label Content="Event Exit:" Grid.Row="5" Foreground="White" FontWeight="Bold"/>
-			<WindowsFormsHost 
-				Grid.Row="6"
-				local:WindowsFormsHostMap.Text="{Binding State.EventExit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-
-				<WindowsFormsHost.Child>
-					<scintilla:Scintilla x:Name="Control_State_EventExit"/>
-				</WindowsFormsHost.Child>
-			</WindowsFormsHost>
-
-			<Label Content="Event Update:" Grid.Row="7" Foreground="White" FontWeight="Bold"/>
-			<WindowsFormsHost 
-				Grid.Row="8"
-				local:WindowsFormsHostMap.Text="{Binding State.EventUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-
-				<WindowsFormsHost.Child>
-					<scintilla:Scintilla x:Name="Control_State_EventUpdate"/>
-				</WindowsFormsHost.Child>
-			</WindowsFormsHost>
+			<Grid Grid.Row="4">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<Label Content="Event Update:" Grid.Row="0" Foreground="White" FontWeight="Bold"/>
+				<WindowsFormsHost  Grid.Row="1" local:WindowsFormsHostMap.Text="{Binding State.EventUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+					<WindowsFormsHost.Child>
+						<scintilla:Scintilla x:Name="Control_State_EventUpdate"/>
+					</WindowsFormsHost.Child>
+				</WindowsFormsHost>
+			</Grid>
 		</Grid>
 	</Grid>
 </UserControl>

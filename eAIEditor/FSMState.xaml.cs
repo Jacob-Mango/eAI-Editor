@@ -182,9 +182,11 @@ namespace eAIEditor
             XmlElement variables = node["variables"];
             if (variables != null)
             {
-                foreach (var variable in variables.OfType<XmlElement>())
+                foreach (var variableNode in variables.OfType<XmlElement>())
                 {
-                    Variables.Add(new FSMVariable(variable));
+                    var variable = new FSMVariable(this);
+                    variable.Read(variableNode);
+                    Variables.Add(variable);
                 }
             }
 
@@ -240,47 +242,6 @@ namespace eAIEditor
             Root.WriteCodeElement(writer, "event_update", EventUpdate);
 
             writer.WriteEndElement();
-        }
-    }
-
-    public class FSMVariable : ViewModelBase
-    {
-        public FSMVariable(XmlElement element)
-        {
-            Name = element.GetAttribute("name");
-            Type = element.GetAttribute("type");
-            Default = element.GetAttribute("default");
-        }
-
-        public void Write(XmlWriter writer)
-        {
-            writer.WriteStartElement("variable");
-            writer.WriteAttributeString("name", Name);
-            writer.WriteAttributeString("type", Type);
-            if (Default != "") writer.WriteAttributeString("default", Default);
-            writer.WriteEndElement();
-        }
-
-        private string _Name;
-        public string Name
-        {
-            get { return _Name; }
-            set { _Name = value; OnPropertyChanged(); }
-        }
-
-        private string _Type;
-        public string Type
-        {
-            get { return _Type; }
-            set { _Type = value; OnPropertyChanged(); }
-        }
-
-        private string _Default;
-
-        public string Default
-        {
-            get { return _Default; }
-            set { _Default = value; OnPropertyChanged(); }
         }
     }
 
