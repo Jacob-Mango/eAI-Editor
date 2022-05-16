@@ -101,6 +101,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ArrowHeads\ArrowEnds.cs" />
+    <Compile Include="ArrowHeads\ArrowLine.cs" />
+    <Compile Include="ArrowHeads\ArrowLineBase.cs" />
+    <Compile Include="ArrowHeads\ArrowPolyline.cs" />
     <Compile Include="FSM.xaml.cs">
       <DependentUpon>FSM.xaml</DependentUpon>
     </Compile>

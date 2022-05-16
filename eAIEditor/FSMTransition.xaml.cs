@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -120,6 +121,34 @@ namespace eAIEditor
             set { _Dst.Y = value; OnPropertyChanged(); }
         }
 
+        private Color _SourceFill;
+        public Color SourceFill
+        {
+            get { return _SourceFill; }
+            set { _SourceFill = value; OnPropertyChanged(); }
+        }
+
+        private Color _SourceStroke;
+        public Color SourceStroke
+        {
+            get { return _SourceStroke; }
+            set { _SourceStroke = value; OnPropertyChanged(); }
+        }
+
+        private Color _DestinationFill;
+        public Color DestinationFill
+        {
+            get { return _DestinationFill; }
+            set { _DestinationFill = value; OnPropertyChanged(); }
+        }
+
+        private Color _DestinationStroke;
+        public Color DestinationStroke
+        {
+            get { return _DestinationStroke; }
+            set { _DestinationStroke = value; OnPropertyChanged(); }
+        }
+
         public const double NoConnectionOffset = 50.0;
 
         public void UpdateSource()
@@ -164,6 +193,11 @@ namespace eAIEditor
         {
             Root = root;
             View = new FSMTransitionView(this);
+        }
+
+        public override void UpdateSelected()
+        {
+            View.UpdateColors();
         }
 
         public void Read(XmlElement node)
@@ -239,17 +273,79 @@ namespace eAIEditor
 
     public partial class FSMTransitionView : UserControl
     {
+        static Color IntToColor(uint value)
+        {
+            var color = System.Drawing.Color.FromArgb((int)value);
+            var c = Color.FromArgb(color.A, color.R, color.G, color.B);
+            c.A = byte.MaxValue;
+            return c;
+        }
+
+        public static readonly Color COLOR_FILL = IntToColor(0x8D8D8D);
+        public static readonly Color COLOR_BORDER = IntToColor(0xA0A0A0);
+        public static readonly Color COLOR_BORDER_SELECTED = IntToColor(0x676767);
+        public static readonly Color COLOR_BORDER_DRAGGING = IntToColor(0xD9D9D9);
+        public static readonly Color COLOR_BORDER_HOVER = IntToColor(0xC6C6C6);
+
         public const double ConnectionOffset = 10.0;
 
         protected FSMTransition m_Transition;
         protected FSMState m_HoveringState;
 
         protected Point m_DragPoint;
+        protected Point m_DragOffset;
 
         public FSMTransitionView(FSMTransition node)
         {
             InitializeComponent();
             DataContext = m_Transition = node;
+
+            UpdateColors();
+        }
+
+        private void MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (sender == SourceBounds)
+            {
+                m_Transition.SourceStroke = COLOR_BORDER_HOVER;
+            }
+
+            if (sender == DestinationBounds)
+            {
+                m_Transition.DestinationStroke = COLOR_BORDER_HOVER;
+            }
+
+            m_Transition.DestinationFill = m_Transition.DestinationStroke;
+        }
+
+        private void MouseLeave(object sender, MouseEventArgs e)
+        {
+            UpdateColors();
+        }
+
+        public void UpdateColors()
+        {
+            m_Transition.SourceStroke = COLOR_BORDER;
+            m_Transition.DestinationStroke = COLOR_FILL;
+
+            if (m_Transition.Root.Root.Selected == m_Transition)
+            {
+                m_Transition.SourceStroke = COLOR_BORDER_SELECTED;
+                m_Transition.DestinationStroke = COLOR_BORDER_SELECTED;
+            }
+
+            if (m_Transition.DraggingSource)
+            {
+                m_Transition.SourceStroke = COLOR_BORDER_DRAGGING;
+            }
+
+            if (m_Transition.DraggingDestination)
+            {
+                m_Transition.DestinationStroke = COLOR_BORDER_DRAGGING;
+            }
+
+            m_Transition.SourceFill = COLOR_FILL;
+            m_Transition.DestinationFill = m_Transition.DestinationStroke;
         }
 
         private void Source_MouseDown(object sender, MouseButtonEventArgs e)
@@ -267,14 +363,15 @@ namespace eAIEditor
             var canvas = m_Transition.Root.View.canvas;
 
             m_DragPoint = e.GetPosition(canvas);
-            m_DragPoint.X -= 6;
-            m_DragPoint.Y -= 6;
+            m_DragOffset = e.GetPosition(SourceBounds);
 
             m_Transition.DraggingSource = true;
             m_Transition.DraggingDestination = false;
 
             m_Transition.Root.Root.Selected = m_Transition;
             m_Transition.Root.Root.Dragging = true;
+
+            UpdateColors();
         }
 
         private void Source_MouseMove(object sender, MouseEventArgs e)
@@ -286,10 +383,12 @@ namespace eAIEditor
 
             var canvas = m_Transition.Root.View.canvas;
 
-            Point position = e.GetPosition(canvas);
+            m_DragPoint = e.GetPosition(canvas);
+            //m_DragPoint.X += m_DragOffset.X;
+            //m_DragPoint.Y += m_DragOffset.Y;
 
             m_HoveringState = null;
-            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
+            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new GeometryHitTestParameters(new EllipseGeometry(m_DragPoint, 10.0, 10.0)));
 
             m_Transition.Source = m_HoveringState;
 
@@ -298,8 +397,8 @@ namespace eAIEditor
                 m_Transition.Source = null;
             }
 
-            m_Transition.SrcX = position.X;
-            m_Transition.SrcY = position.Y;
+            m_Transition.SrcX = m_DragPoint.X;
+            m_Transition.SrcY = m_DragPoint.Y;
 
             m_Transition.StateChanged();
         }
@@ -319,14 +418,15 @@ namespace eAIEditor
             var canvas = m_Transition.Root.View.canvas;
 
             m_DragPoint = e.GetPosition(canvas);
-            m_DragPoint.X -= 6;
-            m_DragPoint.Y -= 6;
+            m_DragOffset = e.GetPosition(DestinationBounds);
 
             m_Transition.DraggingDestination = true;
             m_Transition.DraggingSource = false;
 
             m_Transition.Root.Root.Selected = m_Transition;
             m_Transition.Root.Root.Dragging = true;
+
+            UpdateColors();
         }
 
         private void Destination_MouseMove(object sender, MouseEventArgs e)
@@ -338,10 +438,12 @@ namespace eAIEditor
 
             var canvas = m_Transition.Root.View.canvas;
 
-            Point position = e.GetPosition(canvas);
+            m_DragPoint = e.GetPosition(canvas);
+            //m_DragPoint.X += m_DragOffset.X;
+            //m_DragPoint.Y += m_DragOffset.Y;
 
             m_HoveringState = null;
-            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new PointHitTestParameters(position));
+            VisualTreeHelper.HitTest(Parent as FrameworkElement, null, new HitTestResultCallback(StateResult), new GeometryHitTestParameters(new EllipseGeometry(m_DragPoint, 10.0, 10.0)));
 
             m_Transition.Destination = m_HoveringState;
 
@@ -350,8 +452,8 @@ namespace eAIEditor
                 m_Transition.Destination = null;
             }
 
-            m_Transition.DstX = position.X;
-            m_Transition.DstY = position.Y;
+            m_Transition.DstX = m_DragPoint.X;
+            m_Transition.DstY = m_DragPoint.Y;
 
             m_Transition.StateChanged();
         }
@@ -368,6 +470,8 @@ namespace eAIEditor
             m_Transition.StateChanged();
 
             m_Transition.Root.Root.Dragging = false;
+
+            UpdateColors();
         }
 
         public void MouseMove(object sender, MouseEventArgs e)
@@ -380,10 +484,26 @@ namespace eAIEditor
         {
             var element = (FrameworkElement)result.VisualHit;
             if (element.DataContext.GetType() == typeof(FSMState))
+            {
                 m_HoveringState = (FSMState)element.DataContext;
+            }
 
             // Set the behavior to return visuals at all z-order levels.
             return HitTestResultBehavior.Continue;
+        }
+    }
+
+    public class ColorToBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return new SolidColorBrush((Color)value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            SolidColorBrush c = (SolidColorBrush)value;
+            return c.Color;
         }
     }
 }

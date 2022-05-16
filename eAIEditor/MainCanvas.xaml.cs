@@ -44,6 +44,7 @@ namespace eAIEditor
             set
             {
                 SelectedFSMIndex = FSMs.IndexOf(value);
+                OnPropertyChanged();
             }
             get
             {
@@ -65,7 +66,18 @@ namespace eAIEditor
             }
             set
             {
+                ViewModelBase oldSelected = _selected;
                 _selected = value;
+
+                if (oldSelected != null)
+                {
+                    oldSelected.UpdateSelected();
+                }
+
+                if (_selected != null)
+                {
+                    _selected.UpdateSelected();
+                }
 
                 OnPropertyChanged();
                 OnPropertyChanged("State");
@@ -194,11 +206,14 @@ namespace eAIEditor
     {
         protected MainCanvasContext m_Context;
 
+        public static MainCanvasContext Context { get; private set; }
+
         public MainCanvas()
         {
             InitializeComponent();
 
             m_Context = DataContext as MainCanvasContext;
+            Context = m_Context;
 
 #if DEBUG
             //m_Context.LoadFSM("P:\\DayZExpansion\\AI\\Scripts\\FSM\\Test.xml");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -100,13 +101,6 @@ namespace eAIEditor
             get { return _eventExit; }
         }
 
-        private string _guardExit;
-        public string GuardExit
-        {
-            set { _guardExit = value; OnPropertyChanged(); }
-            get { return _guardExit; }
-        }
-
         private string _eventUpdate;
         public string EventUpdate
         {
@@ -167,6 +161,11 @@ namespace eAIEditor
             }
         }
 
+        public override void UpdateSelected()
+        {
+            View.UpdateSelected();
+        }
+
         public void Read(XmlElement node)
         {
             Name = node.Attributes["name"].Value;
@@ -195,7 +194,6 @@ namespace eAIEditor
                 Height = double.Parse(editor_data["size"].GetAttribute("height"));
             }
 
-            GuardExit = Root.ReadCodeElement(node["guard_exit"]);
             EventEntry = Root.ReadCodeElement(node["event_entry"]);
             EventExit = Root.ReadCodeElement(node["event_exit"]);
             EventUpdate = Root.ReadCodeElement(node["event_update"]);
@@ -234,7 +232,6 @@ namespace eAIEditor
             writer.WriteEndElement();
             writer.WriteEndElement();
 
-            Root.WriteCodeElement(writer, "guard_exit", GuardExit);
             Root.WriteCodeElement(writer, "event_entry", EventEntry);
             Root.WriteCodeElement(writer, "event_exit", EventExit);
             Root.WriteCodeElement(writer, "event_update", EventUpdate);
@@ -298,6 +295,8 @@ namespace eAIEditor
         {
             InitializeComponent();
             DataContext = m_State = node;
+
+            UpdateSelected();
         }
 
         private void RemoveState(object target, ExecutedRoutedEventArgs e)
@@ -327,7 +326,19 @@ namespace eAIEditor
 
         private void MouseLeave(object sender, MouseEventArgs e)
         {
-            HighlightBorder.BorderBrush = BRUSH_DEFAULT;
+            UpdateSelected();
+        }
+
+        public void UpdateSelected()
+        {
+            if (m_State.Root.Root.Selected == m_State)
+            {
+                HighlightBorder.BorderBrush = BRUSH_SELECTED;
+            }
+            else
+            {
+                HighlightBorder.BorderBrush = BRUSH_DEFAULT;
+            }
         }
 
         private void MouseDown(object sender, MouseButtonEventArgs e)

@@ -20,6 +20,19 @@ using System.Windows.Shapes;
 
 namespace eAIEditor
 {
+    public class NullVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value == null ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class TypeMatchesConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -158,7 +171,6 @@ namespace eAIEditor
             InitScintilla(Control_State_EventEntry);
             InitScintilla(Control_State_EventExit);
             InitScintilla(Control_State_EventUpdate);
-            InitScintilla(Control_State_GuardExit);
         }
 
         System.Drawing.Color IntToColor(int value)

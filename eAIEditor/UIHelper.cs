@@ -199,5 +199,9 @@ namespace eAIEditor
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public virtual void UpdateSelected()
+        {
+        }
     }
 }

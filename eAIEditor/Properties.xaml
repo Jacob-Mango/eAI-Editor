@@ -14,9 +14,32 @@
 	<UserControl.Resources>
 		<local:TypeMatchesConverter x:Key="TypeMatchesConverter"/>
 		<local:FSMStateConverter x:Key="FSMStateConverter"/>
+		<local:NullVisibilityConverter x:Key="NullVisibilityConverter"/> 
 	</UserControl.Resources>
- 
+
 	<Grid Background="Transparent">
+		<Grid Background="Transparent" Visibility="{Binding Selected, Converter={StaticResource NullVisibilityConverter}}">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+
+				<Label Content="FSM:" MinWidth="50" Grid.Column="0" Foreground="White" FontWeight="Bold"/>
+				<Label Content="{Binding FocusedFSM.Name}" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White"/>
+			</Grid>
+
+			<Label Content="Variables:" Grid.Row="1" Foreground="White" FontWeight="Bold"/>
+			<Grid Grid.Row="2">
+			</Grid>
+		</Grid>
+		
 		<Grid Background="Transparent">
 			<Grid.Visibility>
 				<MultiBinding Converter="{StaticResource TypeMatchesConverter}">
@@ -91,8 +114,6 @@
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 			
 			<Grid Grid.Row="0">
@@ -136,16 +157,6 @@
 
 				<WindowsFormsHost.Child>
 					<scintilla:Scintilla x:Name="Control_State_EventUpdate"/>
-				</WindowsFormsHost.Child>
-			</WindowsFormsHost>
-
-			<Label Content="Guard Exit:" Grid.Row="9" Foreground="White" FontWeight="Bold"/>
-			<WindowsFormsHost 
-				Grid.Row="10"
-				local:WindowsFormsHostMap.Text="{Binding State.GuardExit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-
-				<WindowsFormsHost.Child>
-					<scintilla:Scintilla x:Name="Control_State_GuardExit"/>
 				</WindowsFormsHost.Child>
 			</WindowsFormsHost>
 		</Grid>

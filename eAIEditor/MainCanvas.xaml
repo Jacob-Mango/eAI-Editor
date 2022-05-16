@@ -118,7 +118,7 @@
             Grid.Row="1"
             AllowMixedOrientation="True"
             AutoWindowSizeWhenOpened="True"
-			ActiveContent="{Binding FocusedFSM}"
+			ActiveContent="{Binding FocusedFSM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 			DocumentsSource="{Binding FSMs}"
             IsVirtualizingAnchorable="True"
             IsVirtualizingDocument="True">
