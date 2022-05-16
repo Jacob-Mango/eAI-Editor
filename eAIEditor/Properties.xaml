@@ -19,7 +19,7 @@
 	</UserControl.Resources>
 
 	<Grid Background="Transparent">
-		<Grid Background="Transparent" Visibility="{Binding Selected, Converter={StaticResource NullVisibilityConverter}}">
+		<Grid Background="Transparent" ShowGridLines="True" Visibility="{Binding Selected, Converter={StaticResource NullVisibilityConverter}}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
@@ -76,7 +76,7 @@
 			</Grid>
 		</Grid>
 
-		<Grid Background="Transparent">
+		<Grid Background="Transparent" ShowGridLines="True">
 			<Grid.Visibility>
 				<MultiBinding Converter="{StaticResource TypeMatchesConverter}">
 					<Binding Path="Transition"/>

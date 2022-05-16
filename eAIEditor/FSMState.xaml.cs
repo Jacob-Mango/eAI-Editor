@@ -87,21 +87,21 @@ namespace eAIEditor
             get => Size.Y;
         }
 
-        private string _eventEntry;
+        public string _eventEntry;
         public string EventEntry
         {
             set { _eventEntry = value; OnPropertyChanged(); }
             get { return _eventEntry; }
         }
 
-        private string _eventExit;
+        public string _eventExit;
         public string EventExit
         {
             set { _eventExit = value; OnPropertyChanged(); }
             get { return _eventExit; }
         }
 
-        private string _eventUpdate;
+        public string _eventUpdate;
         public string EventUpdate
         {
             set { _eventUpdate = value; OnPropertyChanged(); }

@@ -229,6 +229,8 @@ namespace eAIEditor
 
         void InitScintilla(Scintilla area)
         {
+            area.TextChanged += Area_TextChanged;
+
             area.UseTabs = true;
             area.Lexer = Lexer.Cpp;
 
@@ -248,6 +250,47 @@ namespace eAIEditor
 
             // CODE FOLDING MARGIN
             InitCodeFolding(area);
+        }
+
+        private void Area_TextChanged(object sender, EventArgs e)
+        {
+            var area = sender as Scintilla;
+            if (area == null)
+            {
+                return;
+            }
+
+            var context = DataContext as MainCanvasContext;
+            if (context == null)
+            {
+                return;
+            }
+
+            if (context.Transition != null)
+            {
+                if (area == Control_Transition_Guard)
+                {
+                    context.Transition._Guard = area.Text;
+                }
+            }
+
+            if (context.State != null)
+            {
+                if (area == Control_State_EventEntry)
+                {
+                    context.State._eventEntry = area.Text;
+                }
+
+                if (area == Control_State_EventExit)
+                {
+                    context.State._eventExit = area.Text;
+                }
+
+                if (area == Control_State_EventUpdate)
+                {
+                    context.State._eventUpdate = area.Text;
+                }
+            }
         }
 
         private void InitColors(Scintilla area)

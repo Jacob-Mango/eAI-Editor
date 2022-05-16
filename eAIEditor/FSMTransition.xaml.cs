@@ -60,7 +60,7 @@ namespace eAIEditor
             set { _Event = value; OnPropertyChanged(); }
         }
 
-        private string _Guard;
+        public string _Guard;
         public string Guard
         {
             get { return _Guard; }
