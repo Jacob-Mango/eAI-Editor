@@ -31,9 +31,17 @@
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
+				
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
 
-				<Label Content="FSM:" MinWidth="100" Grid.Column="0" Foreground="White" FontWeight="Bold"/>
-				<Label Content="{Binding FocusedFSM.Name}" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White"/>
+				<Label Content="FSM:" MinWidth="100" Grid.Row="0" Grid.Column="0" Foreground="White" FontWeight="Bold"/>
+				<Label Content="{Binding FocusedFSM.Name}" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White"/>
+
+				<Label Content="Type:" MinWidth="100" Grid.Row="1" Grid.Column="0" Foreground="White" FontWeight="Bold"/>
+				<TextBox Text="{Binding FocusedFSM.Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White"/>
 			</Grid>
 
 			<Grid Grid.Row="1">

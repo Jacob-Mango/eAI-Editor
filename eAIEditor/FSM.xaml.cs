@@ -49,6 +49,17 @@ namespace eAIEditor
             get => _name;
         }
 
+        private string _type;
+        public string Type
+        {
+            set
+            {
+                _type = value;
+                OnPropertyChanged();
+            }
+            get => _type;
+        }
+
         private string _defaultState;
         public string DefaultState
         {
@@ -203,6 +214,7 @@ namespace eAIEditor
         public void Read(XmlElement node)
         {
             Name = node.GetAttribute("name");
+            Type = node.GetAttribute("type");
 
             XmlElement files = node["files"];
             if (files != null)
@@ -259,6 +271,10 @@ namespace eAIEditor
             if (!string.IsNullOrWhiteSpace(Name))
             {
                 writer.WriteAttributeString("name", Name);
+            }
+            if (!string.IsNullOrWhiteSpace(Type))
+            {
+                writer.WriteAttributeString("type", Type);
             }
 
             writer.WriteStartElement("files");
